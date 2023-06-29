@@ -1,0 +1,27 @@
+:root {
+    --color: #E3F2FD;
+    --color-dark: #BBDEFB;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+h1 {
+    font-size: initial;
+    margin: 0;
+}
+
+a {
+    color: initial;
+    text-decoration: initial;
+    cursor: pointer;
+}
+
+p {
+    margin: 0;
+}

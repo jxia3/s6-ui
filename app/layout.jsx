@@ -1,8 +1,15 @@
 import { Main } from "./fonts.js"
+import StyledJsxRegistry from "./registry.js"
+import "./global.css"
+import styles from "./styles.module.css"
 
 const RootLayout = ({ children }) => (
     <html lang="en" className={Main.className}>
-        <body>{children}</body>
+        <body className={styles.center}>
+            <div className={styles.content}>
+                <StyledJsxRegistry>{children}</StyledJsxRegistry>
+            </div>
+        </body>
     </html>
 )
 
