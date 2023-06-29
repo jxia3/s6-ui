@@ -25,3 +25,15 @@ a {
 p {
     margin: 0;
 }
+
+button {
+    cursor: pointer;
+    background-color: var(--color);
+    border: none;
+    border-radius: 4px;
+    transition-duration: 200ms;
+}
+
+button:hover {
+    background-color: var(--color-dark);
+}

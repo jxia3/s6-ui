@@ -47,8 +47,8 @@
 }
 
 .link {
-    font-size: 1.4rem;
-    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+    padding: 0.6rem 1.2rem;
     background-color: var(--color);
     border-radius: 4px;
     transition-duration: 200ms;
