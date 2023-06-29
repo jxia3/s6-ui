@@ -10,7 +10,7 @@ const TextInput = ({ label, value, setValue, error, setError, onBlur, monospace 
                 type="text"
                 value={value}
                 onChange={event => setValue(event.target.value)}
-                onFocus={() => setError(null)}
+                onFocus={setError ? () => setError(null) : null}
                 onBlur={onBlur}
             ></input>
             {error ? <div className={`${Monospace.className} error`}>Error: {error}</div> : <></>}
@@ -45,6 +45,7 @@ const TextInput = ({ label, value, setValue, error, setError, onBlur, monospace 
 
 const MethodSearch = () => {
     const [ description, setDescription ] = useState("")
+    const [ descriptionError, setDescriptionError ] = useState(null)
     const [ declaration, setDeclaration ] = useState("")
     const [ declarationError, setDeclarationError ] = useState(null)
 
@@ -69,6 +70,21 @@ const MethodSearch = () => {
         }
     }
 
+    async function search() {
+        if (!description) {
+            setDescriptionError("Missing description")
+            return
+        } else if (declarationError) {
+            return
+        }
+
+        try {
+            console.log("searching")
+        } catch(error) {
+            console.error(error)
+        }
+    }
+
     return (
         <>
             <div className="card">
@@ -77,6 +93,8 @@ const MethodSearch = () => {
                     label="Description (keywords)"
                     value={description}
                     setValue={setDescription}
+                    error={descriptionError}
+                    setError={setDescriptionError}
                 />
                 <TextInput
                     label="Declaration (signature)"
@@ -87,6 +105,7 @@ const MethodSearch = () => {
                     onBlur={checkSignature}
                     monospace
                 />
+                <button className="search" onClick={search}>SEARCH</button>
             </div>
             <style jsx>{`
                 .card {
@@ -100,6 +119,17 @@ const MethodSearch = () => {
                     font-size: 1.5rem;
                     font-weight: normal;
                     margin-bottom: 20px;
+                }
+
+                .search {
+                    font-size: 1.2rem;
+                    background-color: var(--color-dark);
+                    padding: 0.6rem 1.2rem;
+                    margin-top: 5px;
+                }
+
+                .search:hover {
+                    background-color: var(--color-extra-dark);
                 }
             `}</style>
         </>
