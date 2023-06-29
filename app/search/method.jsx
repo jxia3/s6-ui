@@ -112,7 +112,7 @@ const Tests = ({ tests, setTests }) => {
                                 <option value="throws">throws</option>
                                 <option value="===">===</option>
                                 <option value="!==">!==</option>
-                                <option value="<??>">{"<??>"}</option>
+                                {/*<option value="<??>">{"<??>"}</option>*/}
                             </select>
                             <input
                                 className={"input " + Monospace.className}

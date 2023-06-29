@@ -2,10 +2,28 @@ import { NextResponse } from "next/server"
 import { XMLBuilder, XMLParser } from "fast-xml-parser"
 
 const xmlBuilder = new XMLBuilder({
+    arrayNodeName: "TEST",
     ignoreAttributes: false,
     attributeNamePrefix: "#",
     suppressBooleanAttributes: false,
+    cdataPropName: "cdata",
 })
+
+function getOperation(comparator) {
+    if (comparator === "==") {
+        return "EQL"
+    } else if (comparator === "!=") {
+        return "NEQ"
+    } else if (comparator === "throws") {
+        return "THROW"
+    } else if (comparator === "===") {
+        return "SAME"
+    } else if (comparator === "!==") {
+        return "DIFF"
+    } else if (comparator === "<??>") {
+        return "SHOW"
+    }
+}
 
 export async function POST(request) {
     try {
@@ -21,7 +39,7 @@ export async function POST(request) {
 
         const prefix = "7|0|6|http://conifer2.cs.brown.edu:8180/S6Search/|19EECCB9D9B69A8C13196E7A93090849|edu.brown.cs.s6.sviweb.client.SviwebService|sendToServer|java.lang.String/2004016611|<CHECK WHAT='TESTS'>"
         const postfix = "<CONTEXT /></CHECK>|1|2|3|4|1|5|6|"
-        const testData = xmlBuilder.build({
+        const signatureData = xmlBuilder.build({
             SIGNATURE: {
                 METHOD: {
                     "#MODS": 0,
@@ -38,7 +56,21 @@ export async function POST(request) {
                 },
             },
         })
+        const testData = xmlBuilder.build(data.tests.map((test, index) => ({
+            "#TESTID": index,
+            "#TESTNAME": "SVIWEB_" + (index + 1),
+            "#TYPE": "CALL",
+            "#METHOD": data.method.NAME,
+            "#OP": getOperation(test.comparator),
+            INPUT: {
+                cdata: test.left,
+            },
+            OUTPUT: {
+                cdata: test.right,
+            },
+        })))
 
+        console.log(signatureData)
         console.log(testData)
     } catch {
         return NextResponse.json({ error: "Invalid JSON content" }, { status: 400 })
