@@ -1,7 +1,7 @@
 import { Monospace } from "../fonts.js"
 import { useEffect, useState } from "react"
 
-const TextInput = ({ label, value, setValue, error, setError, onBlur, monospace }) => (
+const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, monospace }) => (
     <>
         <div className="content">
             <div className="label">{label}</div>
@@ -9,7 +9,12 @@ const TextInput = ({ label, value, setValue, error, setError, onBlur, monospace 
                 className={monospace ? `input ${Monospace.className}` : "input"}
                 type="text"
                 value={value}
-                onChange={event => setValue(event.target.value)}
+                onChange={event => {
+                    if (onChange) {
+                        onChange()
+                    }
+                    setValue(event.target.value)
+                }}
                 onFocus={setError ? () => setError(null) : null}
                 onBlur={onBlur}
             ></input>
@@ -166,6 +171,7 @@ const MethodSearch = () => {
     const [ descriptionError, setDescriptionError ] = useState(null)
     const [ declaration, setDeclaration ] = useState("")
     const [ declarationError, setDeclarationError ] = useState(null)
+    const [ method, setMethod ] = useState(null)
     const [ tests, setTests ] = useState([{
         left: "",
         comparator: "==",
@@ -178,11 +184,12 @@ const MethodSearch = () => {
             const check = await fetch("/api/method/signature", {
                 method: "POST",
                 body: JSON.stringify({
-                    signature: declaration
+                    signature: declaration,
                 }),
             }).then(response => response.json())
             
             if (check?.RESULT?.SIGNATURE?.METHOD) {
+                setMethod(check.RESULT.SIGNATURE.METHOD)
                 setDeclaration(check.RESULT.SIGNATURE.METHOD.TEXT)
             } else if (check?.PROBLEM) {
                 setDeclarationError(check.PROBLEM)
@@ -200,6 +207,15 @@ const MethodSearch = () => {
             setDescriptionError("Missing description")
             error = true
         }
+
+        if (!declaration) {
+            setDeclarationError("Missing method declaration")
+            error = true
+        } else if (!declarationError && !method) {
+            setDeclarationError("Missing method data")
+            error = true
+        }
+
         if (tests.length === 1 && (!tests[0].left || !tests[0].right)) {
             setTests([{
                 ...tests[0],
@@ -218,9 +234,13 @@ const MethodSearch = () => {
                     error = true
                     testError = true
                 } else {
+                    if (test.error) {
+                        error = true
+                    }
                     newTests.push(test)
                 }
             }
+
             if (tests.length > 1) {
                 newTests.push(tests[tests.length - 1])
             }
@@ -228,10 +248,20 @@ const MethodSearch = () => {
                 setTests(newTests)
             }
         }
-        if (error) return
 
+        if (error) return
         try {
-            console.log("searching")
+            const check = await fetch("/api/method/tests", {
+                method: "POST",
+                body: JSON.stringify({
+                    method,
+                    tests: tests.slice(0, -1).map(test => ({
+                        left: test.left,
+                        comparator: test.comparator,
+                        right: test.right,
+                    })),
+                }),
+            }).then(response => response.json())
         } catch(error) {
             console.error(error)
         }
@@ -254,6 +284,7 @@ const MethodSearch = () => {
                     setValue={setDeclaration}
                     error={declarationError}
                     setError={setDeclarationError}
+                    onChange={() => setMethod(null)}
                     onBlur={checkSignature}
                     monospace
                 />
