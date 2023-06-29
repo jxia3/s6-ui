@@ -11,7 +11,7 @@ const SearchPage = () => {
 
     return (
         <>
-            <div className="search-type">Search Type</div>
+            <div className="search-type">Select search type</div>
             <div className="search-buttons">
                 <button className="search-button" onClick={() => router.push("/search?type=method")}>
                     METHODS
@@ -20,8 +20,8 @@ const SearchPage = () => {
             <MethodSearch />
             <style jsx>{`
                 .search-type {
-                    font-size: 1.5rem;
-                    margin-bottom: 15px;
+                    font-size: 1.2rem;
+                    margin-bottom: 10px;
                 }
 
                 .search-buttons {
@@ -30,7 +30,7 @@ const SearchPage = () => {
                     justify-content: flex-start;
                     align-items: center;
                     gap: 15px;
-                    margin-bottom: 15px;
+                    margin-bottom: 30px;
                 }
 
                 .search-button {

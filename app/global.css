@@ -1,6 +1,7 @@
 :root {
     --color: #E3F2FD;
     --color-dark: #BBDEFB;
+    --error: #ED4337;
 }
 
 * {
@@ -12,6 +13,11 @@ body {
 }
 
 h1 {
+    font-size: initial;
+    margin: 0;
+}
+
+h2 {
     font-size: initial;
     margin: 0;
 }
