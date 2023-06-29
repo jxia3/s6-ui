@@ -1,0 +1,30 @@
+.navbar {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2rem;
+}
+
+.logo {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.logo-top {
+    font-size: 1.25rem;
+}
+
+.link {
+    font-size: 1.1rem;
+}
+
+.link:hover {
+    text-decoration: underline;
+}

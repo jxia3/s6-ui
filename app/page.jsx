@@ -2,7 +2,7 @@ import Link from "next/link"
 import styles from "./styles.module.css"
 
 const SearchLink = ({ text, type }) => (
-    <Link className={styles.link} href={`/search?type=${type}`}>
+    <Link className={styles.link} href={"/search?type=" + type}>
         {text}
     </Link>
 )
