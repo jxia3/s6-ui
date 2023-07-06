@@ -178,7 +178,9 @@ const MethodSearch = ({ setSearchState, setResults }) => {
                         right: test.right,
                     })),
                 }),
-            }).then(response => response.json())
+            })
+                .then(response => response.json())
+                .then(result => !Array.isArray(result) ? [result] : result)
 
             let error = false
             const newTests = [...tests]
