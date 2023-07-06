@@ -86,18 +86,34 @@ const MethodSearch = ({ setSearchState, setResults }) => {
 
     async function search() {
         setResults(null)
-        setSearchState("Validating tests")
-        const error = validateSearch() || await validateTests()
-        if (error) {
+        setSearchState({ message: "Validating tests" })
+        const error = validateSearch()
+        const testData = await validateTests()
+        if (error || testData.error) {
             setSearchState(null)
             return
         }
-        setSearchState("Searching")
-        
-        setTimeout(() => {
+        setSearchState({ message: "Searching" })
+
+        try {
+            const searchResult = await fetch("/api/method/search", {
+                method: "POST",
+                body: JSON.stringify({
+                    method,
+                    tests: testData.data,
+                }),
+            }).then(response => response.json())
+            console.log(searchResult)
+
             setSearchState(null)
             setResults([1, 2, 3, 4, 5])
-        }, 5000)
+        } catch(error) {
+            console.error(error)
+            setSearchState({
+                message: "Search error",
+                error: true,
+            })
+        }
     }
 
     function validateSearch() {
@@ -152,7 +168,7 @@ const MethodSearch = ({ setSearchState, setResults }) => {
 
     async function validateTests() {
         try {
-            const testCheck = await fetch("/api/method/tests", {
+            const testData = await fetch("/api/method/tests", {
                 method: "POST",
                 body: JSON.stringify({
                     method,
@@ -166,11 +182,11 @@ const MethodSearch = ({ setSearchState, setResults }) => {
 
             let error = false
             const newTests = [...tests]
-            for (let t = 0; t < testCheck.length; t ++) {
-                if (testCheck[t].ERROR) {
+            for (let t = 0; t < testData.length; t ++) {
+                if (testData[t].ERROR) {
                     newTests[t] = {
                         ...newTests[t],
-                        error: testCheck[t].ERROR.attributes.MESSAGE,
+                        error: testData[t].ERROR.attributes.MESSAGE,
                     }
                     error = true
                 }
@@ -178,12 +194,12 @@ const MethodSearch = ({ setSearchState, setResults }) => {
 
             if (error) {
                 setTests(newTests)
-                return true
+                return { error: true }
             }
-            return false
+            return { data: testData }
         } catch(error) {
             console.error(error)
-            return true
+            return { error: true }
         }
     }
 

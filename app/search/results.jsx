@@ -31,8 +31,8 @@ const SearchResults = ({ searchState, results }) => (
             <h2 className="title">
                 {searchState ? (
                     <>
-                        {searchState}
-                        <LoadingRing text={searchState} />
+                        {searchState.message}
+                        {!searchState.error ? <LoadingRing text={searchState} /> : <></>}
                     </>
                 ) : results ? (
                     results.length + " search results found"
