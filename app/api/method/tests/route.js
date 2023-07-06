@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import unraw from "unraw"
 import { XMLBuilder, XMLParser } from "fast-xml-parser"
 
 const xmlBuilder = new XMLBuilder({
@@ -7,6 +8,11 @@ const xmlBuilder = new XMLBuilder({
     attributeNamePrefix: "#",
     suppressBooleanAttributes: false,
     cdataPropName: "cdata",
+})
+const xmlParser = new XMLParser({
+    ignoreAttributes: false,
+    attributesGroupName: "attributes",
+    attributeNamePrefix: "",
 })
 
 function getOperation(comparator) {
@@ -34,8 +40,6 @@ export async function POST(request) {
         if (!data.tests) {
             return NextResponse.json({ error: "Missing tests" }, { status: 400 })
         }
-
-        console.log(data)
 
         const prefix = "7|0|6|http://conifer2.cs.brown.edu:8180/S6Search/|19EECCB9D9B69A8C13196E7A93090849|edu.brown.cs.s6.sviweb.client.SviwebService|sendToServer|java.lang.String/2004016611|<CHECK WHAT='TESTS'>"
         const postfix = "<CONTEXT /></CHECK>|1|2|3|4|1|5|6|"
@@ -70,8 +74,30 @@ export async function POST(request) {
             },
         })))
 
-        console.log(signatureData)
-        console.log(testData)
+        try {
+            const checkResult = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/x-gwt-rpc; charset=UTF-8",
+                    "X-Gwt-Module-Base": "http://conifer2.cs.brown.edu:8180/S6Search/",
+                    "x-Gwt-Permutation": "CF96D742F2DD6F6198B9E8C4AAD188EB",
+                },
+                body: prefix + signatureData + testData + postfix,
+            }).then(response => response.text())
+
+            try {
+                const checkXML = unraw(checkResult.slice(checkResult.indexOf(`"`) + 1, checkResult.indexOf(`"`, checkResult.indexOf(`"`) + 1)))
+                const checkData = xmlParser.parse(checkXML)
+                if (!checkData?.RESULT?.TESTS?.TESTCASE) {
+                    return NextResponse.json({ error: "Failed to parse server response" }, { status: 500 })
+                }
+                return NextResponse.json(checkData.RESULT.TESTS.TESTCASE)
+            } catch {
+                return NextResponse.json({ error: "Failed to parse server response" }, { status: 500 })
+            }
+        } catch {
+            return NextResponse.json({ error: "Server request failed" }, { status: 400 })
+        }
     } catch {
         return NextResponse.json({ error: "Invalid JSON content" }, { status: 400 })
     }

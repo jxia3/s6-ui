@@ -1,6 +1,6 @@
 'use client'
 
-import MethodSearch from "./method.jsx"
+import MethodSearch from "./method/search.jsx"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 
