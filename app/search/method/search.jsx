@@ -49,7 +49,7 @@ const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, 
     </>
 )
 
-const MethodSearch = () => {
+const MethodSearch = ({ setSearchState, setResults }) => {
     const [ description, setDescription ] = useState("")
     const [ descriptionError, setDescriptionError ] = useState(null)
     const [ declaration, setDeclaration ] = useState("")
@@ -85,10 +85,19 @@ const MethodSearch = () => {
     }
 
     async function search() {
+        setResults(null)
+        setSearchState("Validating tests")
         const error = validateSearch() || await validateTests()
-        if (error) return
+        if (error) {
+            setSearchState(null)
+            return
+        }
+        setSearchState("Searching")
         
-        
+        setTimeout(() => {
+            setSearchState(null)
+            setResults([1, 2, 3, 4, 5])
+        }, 5000)
     }
 
     function validateSearch() {
@@ -208,6 +217,7 @@ const MethodSearch = () => {
                     background-color: #F5F5F5;
                     border-radius: 4px;
                     padding: 30px 50px;
+                    margin-bottom: 30px;
                 }
 
                 .title {
