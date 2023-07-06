@@ -85,12 +85,18 @@ const MethodSearch = () => {
     }
 
     async function search() {
+        const error = validateSearch() || await validateTests()
+        if (error) return
+        
+        
+    }
+
+    function validateSearch() {
         let error = declarationError ? true : false
         if (!description) {
             setDescriptionError("Missing description")
             error = true
         }
-
         if (!declaration) {
             setDeclarationError("Missing method declaration")
             error = true
@@ -132,9 +138,12 @@ const MethodSearch = () => {
             }
         }
 
-        if (error) return
+        return error
+    }
+
+    async function validateTests() {
         try {
-            const check = await fetch("/api/method/tests", {
+            const testCheck = await fetch("/api/method/tests", {
                 method: "POST",
                 body: JSON.stringify({
                     method,
@@ -145,9 +154,27 @@ const MethodSearch = () => {
                     })),
                 }),
             }).then(response => response.json())
-            console.log(check)
+
+            let error = false
+            const newTests = [...tests]
+            for (let t = 0; t < testCheck.length; t ++) {
+                if (testCheck[t].ERROR) {
+                    newTests[t] = {
+                        ...newTests[t],
+                        error: testCheck[t].ERROR.attributes.MESSAGE,
+                    }
+                    error = true
+                }
+            }
+
+            if (error) {
+                setTests(newTests)
+                return true
+            }
+            return false
         } catch(error) {
             console.error(error)
+            return true
         }
     }
 
