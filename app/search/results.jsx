@@ -1,37 +1,19 @@
-const LoadingRing = () => (
-    <>
-        <div className="ring"></div>
-        <style jsx>{`
-            .ring:after {
-                content: " ";
-                display: block;
-                width: 1.6rem;
-                height: 1.6rem;
-                border: 4px solid #000000;
-                border-radius: 50%;
-                border-color: #000000 transparent transparent transparent;
-                animation: spin 1.2s linear infinite;
-            }
+import LoadingRing from "../../components/loading-ring.jsx"
 
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-        `}</style>
-    </>
-)
+const SearchState = {
+    NONE: 0,
+    VALIDATING: 1,
+    SEARCHING: 2,
+    ERROR: 3,
+}
 
 const SearchResults = ({ searchState, result }) => {
     function getSearchMessage(searchState) {
-        if (searchState === "validating") {
+        if (searchState === SearchState.VALIDATING) {
             return "Validating tests"
-        } else if (searchState === "searching") {
+        } else if (searchState === SearchState.SEARCHING) {
             return "Searching"
-        } else if (searchState === "error") {
+        } else if (searchState === SearchState.ERROR) {
             if (result?.error) {
                 return "Search error: " + result.error
             }
@@ -43,10 +25,10 @@ const SearchResults = ({ searchState, result }) => {
         <>
             <div className="results">
                 <h2 className="title">
-                    {searchState ? (
+                    {searchState !== SearchState.NONE ? (
                         <>
                             {getSearchMessage(searchState, result)}
-                            {searchState !== "error" ? <LoadingRing text={searchState} /> : <></>}
+                            {searchState !== SearchState.ERROR ? <LoadingRing size="1.6rem" border="4px" /> : <></>}
                         </>
                     ) : result ? (
                         "Found " + result.length + " search results"
@@ -69,3 +51,4 @@ const SearchResults = ({ searchState, result }) => {
 }
 
 export default SearchResults
+export { SearchState }

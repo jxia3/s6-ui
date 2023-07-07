@@ -1,5 +1,6 @@
 import { Monospace } from "../../fonts.js"
 import Tests from "./tests.jsx"
+import { SearchState } from "../results.jsx"
 import { useState } from "react"
 
 const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, monospace }) => (
@@ -86,14 +87,14 @@ const MethodSearch = ({ setSearchState, setResult }) => {
 
     async function search() {
         setResult(null)
-        setSearchState("validating")
+        setSearchState(SearchState.VALIDATING)
         const error = validateSearch()
         const testData = await validateTests()
         if (error || testData.error) {
-            setSearchState(null)
+            setSearchState(SearchState.NONE)
             return
         }
-        setSearchState("searching")
+        setSearchState(SearchState.SEARCHING)
 
         try {
             const searchResult = await fetch("/api/method/search", {
@@ -106,14 +107,15 @@ const MethodSearch = ({ setSearchState, setResult }) => {
             }).then(response => response.json())
         
             if (searchResult.error) {
-                setSearchState("error")
+                setSearchState(SearchState.ERROR)
                 setResult({ error: searchResult.error })
             } else {
+                setSearchState(SearchState.NONE)
                 console.log(searchResult)
             }
         } catch(error) {
             console.error(error)
-            setSearchState("error")
+            setSearchState(SearchState.ERROR)
         }
     }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import MethodSearch from "./method/search.jsx"
-import SearchResults from "./results.jsx"
+import SearchResults, { SearchState } from "./results.jsx"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 
@@ -9,7 +9,7 @@ const SearchPage = () => {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [ searchType ] = useState(getSearchType(searchParams.get("type")))
-    const [ searchState, setSearchState ] = useState(null)
+    const [ searchState, setSearchState ] = useState(SearchState.NONE)
     const [ result, setResult ] = useState(null)
 
     return (
