@@ -86,14 +86,14 @@ const MethodSearch = ({ setSearchState, setResults }) => {
 
     async function search() {
         setResults(null)
-        setSearchState({ message: "Validating tests" })
+        setSearchState("validating")
         const error = validateSearch()
         const testData = await validateTests()
         if (error || testData.error) {
             setSearchState(null)
             return
         }
-        setSearchState({ message: "Searching" })
+        setSearchState("searching")
 
         try {
             const searchResult = await fetch("/api/method/search", {
@@ -109,10 +109,7 @@ const MethodSearch = ({ setSearchState, setResults }) => {
             setResults([1, 2, 3, 4, 5])
         } catch(error) {
             console.error(error)
-            setSearchState({
-                message: "Search error",
-                error: true,
-            })
+            setSearchState("error")
         }
     }
 

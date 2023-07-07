@@ -25,32 +25,44 @@ const LoadingRing = () => (
     </>
 )
 
-const SearchResults = ({ searchState, results }) => (
-    <>
-        <div className="results">
-            <h2 className="title">
-                {searchState ? (
-                    <>
-                        {searchState.message}
-                        {!searchState.error ? <LoadingRing text={searchState} /> : <></>}
-                    </>
-                ) : results ? (
-                    results.length + " search results found"
-                ) : <></>}
-            </h2>
-        </div>
-        <style jsx>{`
-            .title {
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-start;
-                align-items: center;
-                gap: 1rem;
-                font-size: 1.5rem;
-                font-weight: normal;
-            }
-        `}</style>
-    </>
-)
+const SearchResults = ({ searchState, results }) => {
+    function getSearchMessage(searchState) {
+        if (searchState === "validating") {
+            return "Validating tests"
+        } else if (searchState === "searching") {
+            return "Searching"
+        } else if (searchState === "error") {
+            return "Search error"
+        }
+    }
+
+    return (
+        <>
+            <div className="results">
+                <h2 className="title">
+                    {searchState ? (
+                        <>
+                            {getSearchMessage(searchState)}
+                            {searchState !== "error" ? <LoadingRing text={searchState} /> : <></>}
+                        </>
+                    ) : results ? (
+                        "Found " + results.length + " search results"
+                    ) : <></>}
+                </h2>
+            </div>
+            <style jsx>{`
+                .title {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 1rem;
+                    font-size: 1.5rem;
+                    font-weight: normal;
+                }
+            `}</style>
+        </>
+    )
+}
 
 export default SearchResults
