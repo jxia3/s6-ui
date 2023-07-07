@@ -87,10 +87,11 @@ export async function POST(request) {
                     "x-Gwt-Permutation": "CF96D742F2DD6F6198B9E8C4AAD188EB",
                 },
                 body: prefix + signatureData + testData + postfix,
+                signal: AbortSignal.timeout(60000),
             }).then(response => response.text())
 
             try {
-                const checkXML = unraw(checkResult.slice(checkResult.indexOf(`"`) + 1, checkResult.indexOf(`"`, checkResult.indexOf(`"`) + 1)))
+                const checkXML = unraw(checkResult.slice(checkResult.indexOf(`"`) + 1, checkResult.lastIndexOf(`"`)))
                 const checkData = xmlParser.parse(checkXML)
                 if (!checkData?.RESULT?.TESTS?.TESTCASE) {
                     return NextResponse.json({ error: "Failed to parse server response" }, { status: 500 })

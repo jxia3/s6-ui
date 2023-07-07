@@ -10,7 +10,7 @@ const SearchPage = () => {
     const searchParams = useSearchParams()
     const [ searchType ] = useState(getSearchType(searchParams.get("type")))
     const [ searchState, setSearchState ] = useState(null)
-    const [ results, setResults ] = useState(null)
+    const [ result, setResult ] = useState(null)
 
     return (
         <>
@@ -20,8 +20,8 @@ const SearchPage = () => {
                     METHODS
                 </button>
             </div>
-            <MethodSearch setSearchState={setSearchState} setResults={setResults} />
-            <SearchResults searchState={searchState} results={results} />
+            <MethodSearch setSearchState={setSearchState} setResult={setResult} />
+            <SearchResults searchState={searchState} result={result} />
             <style jsx>{`
                 .search-type {
                     font-size: 1.2rem;

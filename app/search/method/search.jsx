@@ -49,7 +49,7 @@ const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, 
     </>
 )
 
-const MethodSearch = ({ setSearchState, setResults }) => {
+const MethodSearch = ({ setSearchState, setResult }) => {
     const [ description, setDescription ] = useState("")
     const [ descriptionError, setDescriptionError ] = useState(null)
     const [ declaration, setDeclaration ] = useState("")
@@ -85,7 +85,7 @@ const MethodSearch = ({ setSearchState, setResults }) => {
     }
 
     async function search() {
-        setResults(null)
+        setResult(null)
         setSearchState("validating")
         const error = validateSearch()
         const testData = await validateTests()
@@ -101,12 +101,16 @@ const MethodSearch = ({ setSearchState, setResults }) => {
                 body: JSON.stringify({
                     method,
                     tests: testData.data,
+                    description,
                 }),
             }).then(response => response.json())
-            console.log(searchResult)
-
-            setSearchState(null)
-            setResults([1, 2, 3, 4, 5])
+        
+            if (searchResult.error) {
+                setSearchState("error")
+                setResult({ error: searchResult.error })
+            } else {
+                console.log(searchResult)
+            }
         } catch(error) {
             console.error(error)
             setSearchState("error")

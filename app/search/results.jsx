@@ -25,13 +25,16 @@ const LoadingRing = () => (
     </>
 )
 
-const SearchResults = ({ searchState, results }) => {
+const SearchResults = ({ searchState, result }) => {
     function getSearchMessage(searchState) {
         if (searchState === "validating") {
             return "Validating tests"
         } else if (searchState === "searching") {
             return "Searching"
         } else if (searchState === "error") {
+            if (result?.error) {
+                return "Search error: " + result.error
+            }
             return "Search error"
         }
     }
@@ -42,11 +45,11 @@ const SearchResults = ({ searchState, results }) => {
                 <h2 className="title">
                     {searchState ? (
                         <>
-                            {getSearchMessage(searchState)}
+                            {getSearchMessage(searchState, result)}
                             {searchState !== "error" ? <LoadingRing text={searchState} /> : <></>}
                         </>
-                    ) : results ? (
-                        "Found " + results.length + " search results"
+                    ) : result ? (
+                        "Found " + result.length + " search results"
                     ) : <></>}
                 </h2>
             </div>
