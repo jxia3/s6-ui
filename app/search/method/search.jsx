@@ -1,54 +1,75 @@
 import { Monospace } from "../../fonts.js"
+import LoadingRing from "../../../components/loading-ring.jsx"
 import Tests from "./tests.jsx"
 import { SearchState } from "../results.jsx"
 import { useState } from "react"
 
-const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, monospace }) => (
-    <>
-        <div className="content">
-            <div className="label">{label}</div>
-            <input
-                className={monospace ? `input ${Monospace.className}` : "input"}
-                type="text"
-                value={value}
-                onChange={event => {
-                    if (onChange) {
-                        onChange()
-                    }
-                    setValue(event.target.value)
-                }}
-                onFocus={setError ? () => setError(null) : null}
-                onBlur={onBlur}
-            ></input>
-            {error ? <div className={`error ${Monospace.className}`}>Error: {error}</div> : <></>}
-        </div>
-        <style jsx>{`
-            .content {
-                margin-bottom: 20px;
-            }
+const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, monospace }) => {
+    const [ loading, setLoading ] = useState(false)
 
-            .label {
-                font-size: 0.9rem;
-                margin-bottom: 4px;
-            }
+    return (
+        <>
+            <div className="content">
+                <div className="label">
+                    {label}
+                    {loading ? <LoadingRing size="0.8rem" border="2px" /> : <></>}
+                </div>
+                <input
+                    className={monospace ? `input ${Monospace.className}` : "input"}
+                    type="text"
+                    value={value}
+                    onChange={event => {
+                        if (onChange) {
+                            onChange(event)
+                        }
+                        setValue(event.target.value)
+                    }}
+                    onFocus={setError ? () => setError(null) : null}
+                    onBlur={async event => {
+                        if (onBlur) {
+                            setLoading(true)
+                            try {
+                                await onBlur(event)
+                            } catch {}
+                            setLoading(false)
+                        }
+                    }}
+                ></input>
+                {error ? <div className={`error ${Monospace.className}`}>Error: {error}</div> : <></>}
+            </div>
+            <style jsx>{`
+                .content {
+                    margin-bottom: 20px;
+                }
 
-            .input {
-                width: 100%;
-                padding: 2px 5px;
-            }
+                .label {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 0.6rem;
+                    font-size: 0.9rem;
+                    margin-bottom: 4px;
+                }
 
-            .input {
-                ${error ? "border: 2px solid var(--error)" : ""};
-            }
+                .input {
+                    width: 100%;
+                    padding: 2px 5px;
+                }
 
-            .error {
-                font-size: 0.8rem;
-                color: var(--error);
-                margin-top: 4px;
-            }
-        `}</style>
-    </>
-)
+                .input {
+                    ${error ? "border: 2px solid var(--error)" : ""};
+                }
+
+                .error {
+                    font-size: 0.8rem;
+                    color: var(--error);
+                    margin-top: 4px;
+                }
+            `}</style>
+        </>
+    )
+}
 
 const MethodSearch = ({ setSearchState, setResult }) => {
     const [ description, setDescription ] = useState("")
