@@ -5,7 +5,7 @@ import { XMLBuilder, XMLParser } from "fast-xml-parser"
 const xmlBuilder = new XMLBuilder({
     arrayNodeName: "TEST",
     ignoreAttributes: false,
-    attributeNamePrefix: "#",
+    attributesGroupName: "attributes",
     suppressBooleanAttributes: false,
     cdataPropName: "cdata",
 })
@@ -46,26 +46,30 @@ export async function POST(request) {
         const signatureData = xmlBuilder.build({
             SIGNATURE: {
                 METHOD: {
-                    "#MODS": 0,
-                    ...(data.method.RETURN === "int" ? { "#INT": true } : null),
-                    ...(data.method.RETURN === "float" ? { "#FLOAT": true } : null),
-                    ...(data.method.RETURN === "double" ? { "#DOUBLE": true } : null),
-                    ...(data.method.RETURN === "short" ? { "#SHORT": true } : null),
-                    ...(data.method.RETURN === "long" ? { "#LONG": true } : null),
-                    ...(data.method.RETURN === "boolean" ? { "#BOOLEAN": true } : null),
-                    ...(data.method.RETURN === "byte" ? { "#BYTE": true } : null),
-                    ...(data.method.RETURN === "char" ? { "#CHAR": true } : null),
-                    ...(data.method.RETURN === "java.lang.String" ? { "#STRING": true } : null),
+                    attributes: {
+                        MODS: 0,
+                        ...(data.method.RETURN === "int" ? { INT: true } : null),
+                        ...(data.method.RETURN === "float" ? { FLOAT: true } : null),
+                        ...(data.method.RETURN === "double" ? { DOUBLE: true } : null),
+                        ...(data.method.RETURN === "short" ? { SHORT: true } : null),
+                        ...(data.method.RETURN === "long" ? { LONG: true } : null),
+                        ...(data.method.RETURN === "boolean" ? { BOOLEAN: true } : null),
+                        ...(data.method.RETURN === "byte" ? { BYTE: true } : null),
+                        ...(data.method.RETURN === "char" ? { CHAR: true } : null),
+                        ...(data.method.RETURN === "java.lang.String" ? { STRING: true } : null),
+                    },
                     ...data.method,
                 },
             },
         })
         const testData = xmlBuilder.build(data.tests.map((test, index) => ({
-            "#TESTID": index,
-            "#TESTNAME": "SVIWEB_" + (index + 1),
-            "#TYPE": "CALL",
-            "#METHOD": data.method.NAME,
-            "#OP": getOperation(test.comparator),
+            attributes: {
+                TESTID: index,
+                TESTNAME: "SVIWEB_" + (index + 1),
+                TYPE: "CALL",
+                METHOD: data.method.NAME,
+                OP: getOperation(test.comparator),
+            },
             INPUT: {
                 cdata: test.left,
             },
