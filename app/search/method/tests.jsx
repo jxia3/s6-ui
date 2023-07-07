@@ -1,12 +1,18 @@
 import { Monospace } from "../../fonts.js"
 
+// Function test case input
+
 const Tests = ({ tests, setTests }) => {
+    // Update test data on input
+
     function updateTest(index, prop, value) {
         setTests(tests.toSpliced(index, 1, {
             ...tests[index],
             [prop]: value,
         }))
     }
+
+    // Add or remove test cases on input
 
     function updateTests() {
         if (tests.length === 1 && (tests[0].left || tests[0].right)) {

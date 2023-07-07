@@ -4,6 +4,8 @@ import { useServerInsertedHTML } from "next/navigation"
 import { useState } from "react"
 import { StyleRegistry, createStyleRegistry } from "styled-jsx"
 
+// Styled JSX client registry
+
 export default function StyledJsxRegistry({ children }) {
     const [ jsxStyleRegistry ] = useState(() => createStyleRegistry())
 

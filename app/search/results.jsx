@@ -1,5 +1,7 @@
 import LoadingRing from "../../components/loading-ring.jsx"
 
+// Search state enum
+
 const SearchState = {
     NONE: 0,
     VALIDATING: 1,
@@ -7,7 +9,11 @@ const SearchState = {
     ERROR: 3,
 }
 
+// Search result list
+
 const SearchResults = ({ searchState, result }) => {
+    // Get display message from enum
+    
     function getSearchMessage(searchState) {
         if (searchState === SearchState.VALIDATING) {
             return "Validating tests"

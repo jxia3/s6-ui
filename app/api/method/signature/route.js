@@ -2,16 +2,24 @@ import { NextResponse } from "next/server"
 import unraw from "unraw"
 import { XMLParser } from "fast-xml-parser"
 
+// Create XML parser
+
 const xmlParser = new XMLParser()
+
+// Forward function signature validation request to server
 
 export async function POST(request) {
     try {
+        // Validate request JSON data
+
         const data = await request.json()
         if (!data.signature) {
             return NextResponse.json({ error: "Missing function signature" }, { status: 400 })
         }
 
         try {
+            // Send function signature check to server
+
             const checkResult = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
                 method: "POST",
                 headers: {
@@ -24,6 +32,8 @@ export async function POST(request) {
             }).then(response => response.text())
 
             try {
+                // Return function data
+                
                 const checkXML = unraw(checkResult.slice(checkResult.indexOf(`"`) + 1, checkResult.lastIndexOf(`"`)))
                 return NextResponse.json(xmlParser.parse(checkXML))
             } catch {

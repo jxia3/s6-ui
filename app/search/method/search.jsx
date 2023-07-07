@@ -4,6 +4,8 @@ import Tests from "./tests.jsx"
 import { SearchState } from "../results.jsx"
 import { useState } from "react"
 
+// Function details input
+
 const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, monospace }) => {
     const [ loading, setLoading ] = useState(false)
 
@@ -19,6 +21,8 @@ const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, 
                     type="text"
                     value={value}
                     onChange={event => {
+                        // Run change handler and update value
+
                         if (onChange) {
                             onChange(event)
                         }
@@ -26,6 +30,8 @@ const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, 
                     }}
                     onFocus={setError ? () => setError(null) : null}
                     onBlur={async event => {
+                        // Show loading indicator
+
                         if (onBlur) {
                             setLoading(true)
                             try {
@@ -71,6 +77,8 @@ const TextInput = ({ label, value, setValue, error, setError, onChange, onBlur, 
     )
 }
 
+// Method search card
+
 const MethodSearch = ({ setSearchState, setResult }) => {
     const [ description, setDescription ] = useState("")
     const [ descriptionError, setDescriptionError ] = useState(null)
@@ -83,6 +91,8 @@ const MethodSearch = ({ setSearchState, setResult }) => {
         right: "",
         error: null,
     }])
+
+    // Get function signature data from server on blur
 
     async function checkSignature() {
         try {
@@ -105,6 +115,8 @@ const MethodSearch = ({ setSearchState, setResult }) => {
             console.error(error)
         }
     }
+
+    // Search for method
 
     async function search() {
         setResult(null)
@@ -139,6 +151,8 @@ const MethodSearch = ({ setSearchState, setResult }) => {
             setSearchState(SearchState.ERROR)
         }
     }
+
+    // Check method description, signature, and tests
 
     function validateSearch() {
         let error = declarationError ? true : false
@@ -189,6 +203,8 @@ const MethodSearch = ({ setSearchState, setResult }) => {
 
         return error
     }
+
+    // Check tests and get test data from server
 
     async function validateTests() {
         try {

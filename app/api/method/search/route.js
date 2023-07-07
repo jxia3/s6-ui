@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import unraw from "unraw"
 import { XMLBuilder, XMLParser } from "fast-xml-parser"
 
+// Create XML builder and parser
+
 const xmlBuilder = new XMLBuilder({
     ignoreAttributes: false,
     attributesGroupName: "attributes",
@@ -14,8 +16,12 @@ const xmlParser = new XMLParser({
     attributeNamePrefix: "",
 })
 
+// Forward method search request to server
+
 export async function POST(request) {
     try {
+        // Validate request JSON data
+
         const data = await request.json()
         if (!data.method) {
             return NextResponse.json({ error: "Missing method data" }, { status: 400 })
@@ -26,6 +32,8 @@ export async function POST(request) {
         if (!data.description) {
             return NextResponse.json({ error: "Missing description" }, { status: 400 })
         }
+
+        // Convert request data to XML
 
         const prefix = "7|0|6|http://conifer2.cs.brown.edu:8180/S6Search/|19EECCB9D9B69A8C13196E7A93090849|edu.brown.cs.s6.sviweb.client.SviwebService|sendToServer|java.lang.String/2004016611|<SEARCH WHAT='METHOD' FORMAT='NONE' REMOTE='TRUE' SEARCHCODE='TRUE'>"
         const postfix = "</SEARCH>|1|2|3|4|1|5|6|"
@@ -74,6 +82,8 @@ export async function POST(request) {
         })
 
         try {
+            // Send search request to server
+
             const searchResult = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
                 method: "POST",
                 headers: {
@@ -86,8 +96,13 @@ export async function POST(request) {
             }).then(response => response.text())
             
             try {
+                // Parse server response as JSON
+
                 const resultXML = unraw(searchResult.slice(searchResult.indexOf(`"`) + 1, searchResult.lastIndexOf(`"`)))
                 const resultData = xmlParser.parse(resultXML)
+
+                // Return search results or error
+
                 if (resultData?.RESULT) {
                     return NextResponse.json({ result: resultData.RESULT })
                 } else if (resultData?.PROBLEM) {

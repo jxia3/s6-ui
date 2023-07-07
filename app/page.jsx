@@ -1,11 +1,15 @@
 import Link from "next/link"
 import styles from "./styles.module.css"
 
+// Search page links
+
 const SearchLink = ({ text, type }) => (
     <Link className={styles.link} href={"/search?type=" + type}>
         {text}
     </Link>
 )
+
+// Landing page
 
 const Home = () => (
     <div className={styles.landing}>

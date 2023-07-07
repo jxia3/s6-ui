@@ -1,3 +1,5 @@
+// Spinning loading indicator
+
 const LoadingRing = ({ size, border }) => (
     <>
         <div className="ring"></div>

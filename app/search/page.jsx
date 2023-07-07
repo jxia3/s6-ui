@@ -5,6 +5,8 @@ import SearchResults, { SearchState } from "./results.jsx"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 
+// Search page content layout
+
 const SearchPage = () => {
     const router = useRouter()
     const searchParams = useSearchParams()

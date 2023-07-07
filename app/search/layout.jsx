@@ -1,11 +1,15 @@
 import Link from "next/link"
 import styles from "./search.module.css"
 
+// Navigation link for search page
+
 const NavLink = ({ text, link }) => (
     <Link className={styles.link} href={link}>
         {text}
     </Link>
 )
+
+// Search page layout
 
 const SearchLayout = ({ children }) => (
     <>

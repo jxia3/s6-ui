@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import unraw from "unraw"
 import { XMLBuilder, XMLParser } from "fast-xml-parser"
 
+// Create XML builder and parser
+
 const xmlBuilder = new XMLBuilder({
     arrayNodeName: "TEST",
     ignoreAttributes: false,
@@ -14,6 +16,8 @@ const xmlParser = new XMLParser({
     attributesGroupName: "attributes",
     attributeNamePrefix: "",
 })
+
+// Convert operation symbol to server id
 
 function getOperation(comparator) {
     if (comparator === "==") {
@@ -31,8 +35,12 @@ function getOperation(comparator) {
     }
 }
 
+// Forward test validation request to server
+
 export async function POST(request) {
     try {
+        // Validate request JSON data
+
         const data = await request.json()
         if (!data.method) {
             return NextResponse.json({ error: "Missing method data" }, { status: 400 })
@@ -40,6 +48,8 @@ export async function POST(request) {
         if (!data.tests) {
             return NextResponse.json({ error: "Missing tests" }, { status: 400 })
         }
+
+        // Convert request data to XML
 
         const prefix = "7|0|6|http://conifer2.cs.brown.edu:8180/S6Search/|19EECCB9D9B69A8C13196E7A93090849|edu.brown.cs.s6.sviweb.client.SviwebService|sendToServer|java.lang.String/2004016611|<CHECK WHAT='TESTS'>"
         const postfix = "<CONTEXT /></CHECK>|1|2|3|4|1|5|6|"
@@ -79,6 +89,8 @@ export async function POST(request) {
         })))
 
         try {
+            // Send test validation request to server
+
             const checkResult = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
                 method: "POST",
                 headers: {
@@ -91,11 +103,16 @@ export async function POST(request) {
             }).then(response => response.text())
 
             try {
+                // Parse server response as JSON
+
                 const checkXML = unraw(checkResult.slice(checkResult.indexOf(`"`) + 1, checkResult.lastIndexOf(`"`)))
                 const checkData = xmlParser.parse(checkXML)
                 if (!checkData?.RESULT?.TESTS?.TESTCASE) {
                     return NextResponse.json({ error: "Failed to parse server response" }, { status: 500 })
                 }
+
+                // Return test data
+                
                 return NextResponse.json(checkData.RESULT.TESTS.TESTCASE)
             } catch {
                 return NextResponse.json({ error: "Failed to parse server response" }, { status: 500 })
