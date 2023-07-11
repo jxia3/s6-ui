@@ -272,7 +272,7 @@ const MethodSearch = ({ setSearchState, setResult }) => {
             <style jsx>{`
                 .card {
                     width: min(800px, 100%);
-                    background-color: #F5F5F5;
+                    background-color: var(--fill);
                     border-radius: 4px;
                     padding: 30px 50px;
                     margin-bottom: 30px;

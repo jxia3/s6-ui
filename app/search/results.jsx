@@ -2,6 +2,12 @@ import LoadingRing from "../../components/loading-ring.jsx"
 import hljs from "highlight.js"
 import { useEffect } from "react"
 
+// Ignore highlight.js XSS warning
+
+hljs.configure({
+    ignoreUnescapedHTML: true,
+})
+
 // Search state enum
 
 const SearchState = {
@@ -20,17 +26,6 @@ const CodeResults = ({ results }) => {
         hljs.highlightAll()
     }, [])
 
-    // Escape unsafe characters
-
-    function escape(code) {
-        return code
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll(`"`, "&quot;")
-            .replaceAll("'", "&#039;")
-    }
-
     return (
         <>
             <div className="results">
@@ -46,7 +41,7 @@ const CodeResults = ({ results }) => {
                         <h3 className="title">{result.NAME}</h3>
                         <pre className="code">
                             <code className="content language-java">
-                                {escape(result.CODE)}
+                                {result.CODE}
                             </code>
                         </pre>
                     </div>
@@ -63,12 +58,12 @@ const CodeResults = ({ results }) => {
 
                 .result {
                     width: 100%;
-                    border-top: 1px solid #333333;
+                    border-top: 1px solid #888888;
                     padding: 20px 0;
                 }
 
                 .result:last-of-type {
-                    border-bottom: 1px solid #333333;
+                    border-bottom: 1px solid #888888;
                 }
 
                 .title {
@@ -80,7 +75,7 @@ const CodeResults = ({ results }) => {
                 }
 
                 .content {
-                    background-color: #F5F5F5 !important;
+                    background-color: var(--fill) !important;
                     padding: 1rem !important;
                     border-radius: 4px !important;
                 }
