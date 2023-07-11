@@ -46,9 +46,10 @@ pre {
 button {
     cursor: pointer;
     background-color: var(--color);
+    padding: 0;
     border: none;
     border-radius: 4px;
-    transition-duration: 200ms;
+    transition-duration: 150ms;
 }
 
 button:hover {

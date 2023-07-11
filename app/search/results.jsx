@@ -1,6 +1,6 @@
 import LoadingRing from "../../components/loading-ring.jsx"
 import hljs from "highlight.js"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 // Ignore highlight.js XSS warning
 
@@ -19,17 +19,31 @@ const SearchState = {
 
 // Code results list component
 
-const CodeResults = ({ results }) => {
+const CodeResults = ({ results, sort }) => {
+    const [ resultList, setResultList ] = useState([])
+
     // Run highlight.js on code blocks
 
     useEffect(() => {
         hljs.highlightAll()
-    }, [])
+    }, [resultList])
+
+    // Change results sort
+
+    useEffect(() => {
+        if (sort === "size") {
+            setResultList([...results].sort((a, b) => +a.COMPLEXITY.attributes.LINES - +b.COMPLEXITY.attributes.LINES))
+        } else if (sort === "complexity") {
+            setResultList([...results].sort((a, b) => +a.COMPLEXITY.attributes.CODE - +b.COMPLEXITY.attributes.CODE))
+        } else {
+            setResultList([...results].sort((a, b) => +a.COMPLEXITY.attributes.TESTTIME - +b.COMPLEXITY.attributes.TESTTIME))
+        }
+    }, [results, sort])
 
     return (
         <>
             <div className="results">
-                {results.map(result => (
+                {resultList.map(result => (
                     <div
                         className="result"
                         key={result?.TRANSFORMS?.TRANSFORM ?
@@ -87,6 +101,8 @@ const CodeResults = ({ results }) => {
 // Search result list
 
 const SearchResults = ({ searchState, result }) => {
+    const [ sort, setSort ] = useState("size")
+
     // Get display message from enum
     
     function getSearchMessage(searchState) {
@@ -102,10 +118,6 @@ const SearchResults = ({ searchState, result }) => {
         }
     }
 
-    useEffect(() => {
-        console.log(result)
-    }, [result])
-
     return (
         <>
             <div className="results">
@@ -119,7 +131,30 @@ const SearchResults = ({ searchState, result }) => {
                         `Found ${result.SOLUTION.length} search results out of ${result.COUNT[0].attributes.TOTAL} candidates`
                     ) : <></>}
                 </h2>
-                {result?.SOLUTION ? <CodeResults results={result.SOLUTION} /> : <></>}
+                {result?.SOLUTION ? (
+                    <div className="sort">
+                        Sort by
+                        <button
+                            className={"sort-type" + (sort === "size" ? " selected" : "")}
+                            onClick={() => setSort("size")}
+                        >
+                            CODE SIZE
+                        </button>
+                        <button
+                            className={"sort-type" + (sort === "complexity" ? " selected" : "")}
+                            onClick={() => setSort("complexity")}
+                        >
+                            COMPLEXITY
+                        </button>
+                        <button
+                            className={"sort-type" + (sort === "efficiency" ? " selected" : "")}
+                            onClick={() => setSort("efficiency")}
+                        >
+                            EFFICIENCY
+                        </button>
+                    </div>
+                ) : <></>}
+                {result?.SOLUTION ? <CodeResults results={result.SOLUTION} sort={sort} /> : <></>}
             </div>
             <style jsx>{`
                 .title {
@@ -130,7 +165,26 @@ const SearchResults = ({ searchState, result }) => {
                     gap: 1rem;
                     font-size: 1.5rem;
                     font-weight: normal;
-                    margin-bottom: 30px;
+                    margin-bottom: 10px;
+                }
+
+                .sort {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin-bottom: 20px;
+                }
+
+                .sort-type {
+                    font-size: 0.8rem;
+                    padding: 0.35rem 0.8rem;
+                    border: 2px solid #FFFFFF;
+                }
+
+                .selected {
+                    border: 2px solid var(--color-dark);
                 }
             `}</style>
         </>

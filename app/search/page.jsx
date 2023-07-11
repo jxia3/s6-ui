@@ -48,6 +48,8 @@ const SearchPage = () => {
     )
 }
 
+// Check search type or return default
+
 function getSearchType(type) {
     if (type === "method") {
         return type
