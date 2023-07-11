@@ -9,9 +9,11 @@ import "highlight.js/styles/vs.css"
 
 const RootLayout = ({ children }) => (
     <html lang="en" className={Main.className}>
-        <body className={styles.center}>
-            <div className={styles.content}>
-                <StyledJsxRegistry>{children}</StyledJsxRegistry>
+        <body>
+            <div className={styles.center}>
+                <div className={styles.content}>
+                    <StyledJsxRegistry>{children}</StyledJsxRegistry>
+                </div>
                 <div className={styles.footer}>
                     Research by&nbsp;
                     <a className={styles["footer-link"]} href="https://cs.brown.edu/~spr/research/s6.html" target="_blank">Steven P. Reiss</a>,
