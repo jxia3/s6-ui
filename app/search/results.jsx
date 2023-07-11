@@ -43,9 +43,13 @@ const CodeResults = ({ results, sort }) => {
 
     // Copy code to clipboard
 
-    async function copyResult(code) {
+    async function copyResult(event, code) {
         try {
             await navigator.clipboard.writeText(code)
+            event.target.classList.add("flash")
+            setTimeout(() => {
+                event.target.classList.remove("flash")
+            }, 300)
         } catch(error) {
             console.error(error)
         }
@@ -70,8 +74,9 @@ const CodeResults = ({ results, sort }) => {
                             </code>
                         </pre>
                         <div className="controls">
-                            <button className="control" onClick={() => copyResult(result.CODE)}>COPY CODE</button>
+                            <button className="control" onClick={event => copyResult(event, result.CODE)}>COPY CODE</button>
                             <a className="control view-raw" href={result.SOLSRC.slice(7)} target="_blank">VIEW RAW</a>
+                            <button className="control">VIEW LICENSE</button>
                         </div>
                     </div>
                 ))}
@@ -83,6 +88,7 @@ const CodeResults = ({ results, sort }) => {
                     flex-direction: column;
                     justify-content: flex-start;
                     align-items: flex-start;
+                    margin-bottom: 50px;
                 }
 
                 .result {
@@ -130,6 +136,20 @@ const CodeResults = ({ results, sort }) => {
 
                 .view-raw:hover {
                     background-color: var(--color-dark);
+                }
+
+                .flash {
+                    animation: flash 300ms;
+                }
+
+                @keyframes flash {
+                    50% {
+                        background-color: var(--color-extra-dark);
+                    }
+
+                    100% {
+                        background-color: var(--color-dark);
+                    }
                 }
             `}</style>
         </>
