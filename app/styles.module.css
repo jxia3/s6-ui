@@ -16,7 +16,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-bottom: 10vh;
+    padding-bottom: max(12vh, 60px);
 }
 
 .title {
@@ -57,4 +57,29 @@
 
 .link:hover {
     background-color: var(--color-dark);
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: min(1150px, calc(100vw - 40px));
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.footer-link {
+    text-decoration: underline;
+}
+
+.repo-link {
+    margin-left: auto;
+}
+
+.repo-icon {
+    width: 30px;
+    height: 30px;
 }
