@@ -6,7 +6,7 @@
 }
 
 .content {
-    width: min(1100px, calc(100vw - 30px));
+    width: min(1150px, calc(100vw - 40px));
 }
 
 .landing {
@@ -32,6 +32,7 @@
 }
 
 .desc {
+    max-width: 1000px;
     font-size: 1.3rem;
     text-align: center;
     margin-bottom: 2rem;

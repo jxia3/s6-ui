@@ -3,7 +3,7 @@
 import MethodSearch from "./method/search.jsx"
 import SearchResults, { SearchState } from "./results.jsx"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 // Search page content layout
 

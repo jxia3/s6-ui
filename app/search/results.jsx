@@ -20,6 +20,7 @@ const SearchState = {
 // Code results list component
 
 const CodeResults = ({ results, sort }) => {
+    console.log(results)
     const [ resultList, setResultList ] = useState([])
 
     // Run highlight.js on code blocks
@@ -40,6 +41,16 @@ const CodeResults = ({ results, sort }) => {
         }
     }, [results, sort])
 
+    // Copy code to clipboard
+
+    async function copyResult(code) {
+        try {
+            await navigator.clipboard.writeText(code)
+        } catch(error) {
+            console.error(error)
+        }
+    }
+
     return (
         <>
             <div className="results">
@@ -58,6 +69,10 @@ const CodeResults = ({ results, sort }) => {
                                 {result.CODE}
                             </code>
                         </pre>
+                        <div className="controls">
+                            <button className="control" onClick={() => copyResult(result.CODE)}>COPY CODE</button>
+                            <a className="control view-raw" href={result.SOLSRC.slice(7)} target="_blank">VIEW RAW</a>
+                        </div>
                     </div>
                 ))}
             </div>
@@ -92,6 +107,29 @@ const CodeResults = ({ results, sort }) => {
                     background-color: var(--fill) !important;
                     padding: 1rem !important;
                     border-radius: 4px !important;
+                }
+
+                .controls {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+
+                .control {
+                    font-size: 0.8rem;
+                    padding: 0.4rem 0.8rem;
+                }
+
+                .view-raw {
+                    background-color: var(--color);
+                    border-radius: 4px;
+                    transition-duration: 150ms;
+                }
+
+                .view-raw:hover {
+                    background-color: var(--color-dark);
                 }
             `}</style>
         </>
