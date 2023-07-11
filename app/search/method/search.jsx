@@ -144,11 +144,11 @@ const MethodSearch = ({ setSearchState, setResult }) => {
                 setResult({ error: searchResult.error })
             } else {
                 setSearchState(SearchState.NONE)
-                console.log(searchResult)
+                setResult(searchResult.result.SOLUTIONS)
             }
         } catch(error) {
-            console.error(error)
             setSearchState(SearchState.ERROR)
+            console.error(error)
         }
     }
 

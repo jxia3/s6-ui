@@ -1,4 +1,5 @@
 import { Monospace } from "../../fonts.js"
+import React from "react"
 
 // Function test case input
 
@@ -47,8 +48,8 @@ const Tests = ({ tests, setTests }) => {
             <div className="content">
                 <div className="label">Method tests</div>
                 {tests.map((test, index) => (
-                    <>
-                        <div className="test" key={"test-" + index}>
+                    <React.Fragment key={index}>
+                        <div className="test">
                             <input
                                 className={"input " + Monospace.className}
                                 type="text"
@@ -82,8 +83,8 @@ const Tests = ({ tests, setTests }) => {
                                 style={{ border: test.error ? "2px solid var(--error)" : "" }}
                             ></input>
                         </div>
-                        {test.error ? <div className={`error ${Monospace.className}`} key={"error-" + index}>Error: {test.error}</div> : <></>}
-                    </>
+                        {test.error ? <div className={`error ${Monospace.className}`}>Error: {test.error}</div> : <></>}
+                    </React.Fragment>
                 ))}
             </div>
             <style jsx>{`

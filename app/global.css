@@ -23,6 +23,11 @@ h2 {
     margin: 0;
 }
 
+h3 {
+    font-size: initial;
+    margin: 0;
+}
+
 a {
     color: initial;
     text-decoration: initial;
