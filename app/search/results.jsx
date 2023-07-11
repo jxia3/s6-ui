@@ -1,4 +1,5 @@
 import LoadingRing from "../../components/loading-ring.jsx"
+import hljs from "highlight.js"
 import { useEffect } from "react"
 
 // Search state enum
@@ -13,6 +14,23 @@ const SearchState = {
 // Code results list component
 
 const CodeResults = ({ results }) => {
+    // Run highlight.js on code blocks
+
+    useEffect(() => {
+        hljs.highlightAll()
+    }, [])
+
+    // Escape unsafe characters
+
+    function escape(code) {
+        return code
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll(`"`, "&quot;")
+            .replaceAll("'", "&#039;")
+    }
+
     return (
         <>
             <div className="results">
@@ -26,6 +44,11 @@ const CodeResults = ({ results }) => {
                                 result.SOLSRC}
                     >
                         <h3 className="title">{result.NAME}</h3>
+                        <pre className="code">
+                            <code className="content language-java">
+                                {escape(result.CODE)}
+                            </code>
+                        </pre>
                     </div>
                 ))}
             </div>
@@ -50,6 +73,16 @@ const CodeResults = ({ results }) => {
 
                 .title {
                     font-weight: normal;
+                }
+
+                .code {
+                    margin: 15px 0;
+                }
+
+                .content {
+                    background-color: #F5F5F5 !important;
+                    padding: 1rem !important;
+                    border-radius: 4px !important;
                 }
             `}</style>
         </>

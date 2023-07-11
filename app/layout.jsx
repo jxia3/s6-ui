@@ -1,7 +1,9 @@
 import { Main } from "./fonts.js"
 import StyledJsxRegistry from "./registry.js"
+
 import "./global.css"
 import styles from "./styles.module.css"
+import "highlight.js/styles/vs.css"
 
 // Global layout
 
