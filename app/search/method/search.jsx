@@ -1,4 +1,4 @@
-import { SearchBox } from "./details.jsx"
+import { SearchBox } from "./search-box.jsx"
 import SearchResults, { SearchState } from "../results.jsx"
 import { useState } from "react"
 
