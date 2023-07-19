@@ -91,7 +91,7 @@ export async function POST(request) {
         try {
             // Send test validation request to server
 
-            const checkResult = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
+            const checkRequest = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
                 method: "POST",
                 headers: {
                     "Content-Type": "text/x-gwt-rpc; charset=UTF-8",
@@ -100,7 +100,15 @@ export async function POST(request) {
                 },
                 body: prefix + signatureData + testData + postfix,
                 signal: AbortSignal.timeout(60000),
-            }).then(response => response.text())
+            })
+            const checkResult = await checkRequest.text()
+
+            if (checkRequest.status !== 200) {
+                return NextResponse.json({
+                    error: "Server request failed with " + checkRequest.status,
+                    ...(checkResult ? { message: checkResult } : null),
+                }, { status: 500 })
+            }
 
             try {
                 // Parse server response as JSON

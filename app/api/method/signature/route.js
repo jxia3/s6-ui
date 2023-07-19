@@ -20,7 +20,7 @@ export async function POST(request) {
         try {
             // Send function signature check to server
 
-            const checkResult = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
+            const checkRequest = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
                 method: "POST",
                 headers: {
                     "Content-Type": "text/x-gwt-rpc; charset=UTF-8",
@@ -29,7 +29,15 @@ export async function POST(request) {
                 },
                 body: `7|0|6|http://conifer2.cs.brown.edu:8180/S6Search/|19EECCB9D9B69A8C13196E7A93090849|edu.brown.cs.s6.sviweb.client.SviwebService|sendToServer|java.lang.String/2004016611|<CHECK WHAT='METHOD'><METHOD><![CDATA[${data.signature}]]></METHOD><CONTEXT /></CHECK>|1|2|3|4|1|5|6|`,
                 signal: AbortSignal.timeout(60000),
-            }).then(response => response.text())
+            })
+            const checkResult = await checkRequest.text()
+
+            if (checkRequest.status !== 200) {
+                return NextResponse.json({
+                    error: "Server request failed with " + checkRequest.status,
+                    ...(checkResult ? { message: checkResult } : null),
+                }, { status: 500 })
+            }
 
             try {
                 // Return function data

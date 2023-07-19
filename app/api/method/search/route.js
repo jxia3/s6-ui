@@ -63,8 +63,10 @@ export async function POST(request) {
                     testData.CALL.INPUT.VALUE = {
                         cdata: testData.CALL.INPUT.VALUE,
                     }
-                    testData.CALL.OUTPUT.VALUE = {
-                        cdata: testData.CALL.OUTPUT.VALUE,
+                    if (!testData.CALL.THROW) {
+                        testData.CALL.OUTPUT.VALUE = {
+                            cdata: testData.CALL.OUTPUT.VALUE,
+                        }
                     }
                     return testData
                 }),
@@ -84,7 +86,7 @@ export async function POST(request) {
         try {
             // Send search request to server
 
-            const searchResult = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
+            const searchRequest = await fetch("http://conifer2.cs.brown.edu:8180/S6Search/sviweb", {
                 method: "POST",
                 headers: {
                     "Content-Type": "text/x-gwt-rpc; charset=UTF-8",
@@ -93,7 +95,15 @@ export async function POST(request) {
                 },
                 body: prefix + signatureData + testData + contextData + postfix,
                 signal: AbortSignal.timeout(300000),
-            }).then(response => response.text())
+            })
+            const searchResult = await searchRequest.text()
+
+            if (searchRequest.status !== 200) {
+                return NextResponse.json({
+                    error: "Server request failed with " + searchRequest.status,
+                    ...(searchResult ? { message: searchResult } : null),
+                }, { status: 500 })
+            }
             
             try {
                 // Parse server response as JSON
@@ -118,7 +128,8 @@ export async function POST(request) {
             }
             return NextResponse.json({ error: "Server request failed" }, { status: 400 })
         }
-    } catch {
+    } catch(error) {
+        console.log(error)
         return NextResponse.json({ error: "Invalid JSON content" }, { status: 400 })
     }
 }

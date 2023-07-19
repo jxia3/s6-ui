@@ -103,11 +103,11 @@ const MethodSearch = ({ setSearchState, setResult }) => {
                 }),
             }).then(response => response.json())
             
-            if (check?.RESULT?.SIGNATURE?.METHOD) {
+            if (check?.error || check?.PROBLEM) {
+                setDeclarationError(check?.error || check?.PROBLEM)
+            } else if (check?.RESULT?.SIGNATURE?.METHOD) {
                 setMethod(check.RESULT.SIGNATURE.METHOD)
                 setDeclaration(check.RESULT.SIGNATURE.METHOD.TEXT)
-            } else if (check?.PROBLEM) {
-                setDeclarationError(check.PROBLEM)
             } else {
                 console.error(new Error("Unable to interpret server response " + JSON.stringify(check)))
             }
@@ -139,12 +139,14 @@ const MethodSearch = ({ setSearchState, setResult }) => {
                 }),
             }).then(response => response.json())
         
-            if (searchResult.error) {
+            if (searchResult?.error) {
                 setSearchState(SearchState.ERROR)
                 setResult({ error: searchResult.error })
-            } else {
+            } else if (searchResult?.result?.SOLUTIONS) {
                 setSearchState(SearchState.NONE)
                 setResult(searchResult.result.SOLUTIONS)
+            } else {
+                console.error(new Error("Unable to interpret server response " + JSON.stringify(searchResult)))
             }
         } catch(error) {
             setSearchState(SearchState.ERROR)
@@ -208,7 +210,7 @@ const MethodSearch = ({ setSearchState, setResult }) => {
 
     async function validateTests() {
         try {
-            const testData = await fetch("/api/method/tests", {
+            const testResult = await fetch("/api/method/tests", {
                 method: "POST",
                 body: JSON.stringify({
                     method,
@@ -218,17 +220,21 @@ const MethodSearch = ({ setSearchState, setResult }) => {
                         right: test.right,
                     })),
                 }),
-            })
-                .then(response => response.json())
-                .then(result => !Array.isArray(result) ? [result] : result)
+            }).then(response => response.json())
+
+            if (testResult?.error) {
+                console.error(new Error(testResult.error))
+                return { error: true }
+            }
+            const testCases = !Array.isArray(testResult) ? [testResult] : testResult
 
             let error = false
             const newTests = [...tests]
-            for (let t = 0; t < testData.length; t ++) {
-                if (testData[t].ERROR) {
+            for (let t = 0; t < testCases.length; t ++) {
+                if (testCases[t].ERROR) {
                     newTests[t] = {
                         ...newTests[t],
-                        error: testData[t].ERROR.attributes.MESSAGE,
+                        error: testCases[t].ERROR.attributes.MESSAGE,
                     }
                     error = true
                 }
@@ -238,7 +244,7 @@ const MethodSearch = ({ setSearchState, setResult }) => {
                 setTests(newTests)
                 return { error: true }
             }
-            return { data: testData }
+            return { data: testCases }
         } catch(error) {
             console.error(error)
             return { error: true }
