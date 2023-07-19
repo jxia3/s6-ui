@@ -1,5 +1,6 @@
 import { SearchBox } from "./search-box.jsx"
 import SearchStatus, { SearchState } from "../status.jsx"
+import CaseSelect from "./case-select.jsx"
 import SearchResults from "../results.jsx"
 import { useState } from "react"
 
@@ -7,7 +8,9 @@ import { useState } from "react"
 
 const MethodSearch = () => {
     const [ searchState, setSearchState ] = useState(SearchState.NONE)
+    const [ testOptions, setTestOptions ] = useState(null)
     const [ result, setResult ] = useState(null)
+
     const [ description, setDescription ] = useState("")
     const [ descriptionError, setDescriptionError ] = useState(null)
     const [ declaration, setDeclaration ] = useState("")
@@ -49,6 +52,10 @@ const MethodSearch = () => {
             } else if (searchResult?.result?.SOLUTIONS) {
                 setSearchState(SearchState.NONE)
                 setResult(searchResult.result.SOLUTIONS)
+            } else if (searchResult?.result?.USERINPUT) {
+                console.log(searchResult.result)
+                setSearchState(SearchState.NONE)
+                setTestOptions(searchResult.result.USERINPUT)
             } else {
                 console.error(new Error("Unable to interpret server response " + JSON.stringify(searchResult)))
             }
@@ -171,8 +178,21 @@ const MethodSearch = () => {
                 setTests={setTests}
                 search={search}
             />
-            <SearchStatus searchState={searchState} result={result} />
-            <SearchResults result={result} />
+            <SearchStatus
+                searchState={searchState}
+                testOptions={testOptions}
+                result={result}
+            />
+            {searchState === SearchState.NONE ? (
+                <>
+                    <CaseSelect
+                        testOptions={testOptions}
+                        setSearchState={setSearchState}
+                        setResult={setResult}
+                    />
+                    <SearchResults result={result} />
+                </>
+            ) : (<></>)}
         </>
     )
 }

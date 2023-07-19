@@ -11,7 +11,7 @@ const SearchState = {
 
 // Search status component
 
-const SearchStatus = ({ searchState, result }) => {
+const SearchStatus = ({ searchState, testOptions, result }) => {
     // Get display message from enum
     
     function getSearchMessage(searchState) {
@@ -37,6 +37,8 @@ const SearchStatus = ({ searchState, result }) => {
                     </>
                 ) : result?.SOLUTION ? (
                     `Found ${result.SOLUTION.length} search results out of ${result.COUNT[0].attributes.TOTAL} candidates`
+                ) : testOptions?.length ? (
+                    "Found " + testOptions.length + " test case results"
                 ) : <></>}
             </h2>
             <style jsx>{`

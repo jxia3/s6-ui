@@ -63,7 +63,7 @@ export async function POST(request) {
                     testData.CALL.INPUT.VALUE = {
                         cdata: testData.CALL.INPUT.VALUE,
                     }
-                    if (!testData.CALL.THROW) {
+                    if (testData.CALL?.OUTPUT?.VALUE) {
                         testData.CALL.OUTPUT.VALUE = {
                             cdata: testData.CALL.OUTPUT.VALUE,
                         }
