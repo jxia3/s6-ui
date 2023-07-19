@@ -1,5 +1,6 @@
 import { SearchBox } from "./search-box.jsx"
-import SearchResults, { SearchState } from "../results.jsx"
+import SearchStatus, { SearchState } from "../status.jsx"
+import SearchResults from "../results.jsx"
 import { useState } from "react"
 
 // Method search layout
@@ -170,7 +171,8 @@ const MethodSearch = () => {
                 setTests={setTests}
                 search={search}
             />
-            <SearchResults searchState={searchState} result={result} />
+            <SearchStatus searchState={searchState} result={result} />
+            <SearchResults result={result} />
         </>
     )
 }

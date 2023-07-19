@@ -1,4 +1,3 @@
-import LoadingRing from "../../components/loading-ring.jsx"
 import hljs from "highlight.js"
 import { useEffect, useState } from "react"
 
@@ -157,74 +156,34 @@ const CodeResults = ({ results, sort }) => {
 
 // Search result list
 
-const SearchResults = ({ searchState, result }) => {
+const SearchResults = ({ result }) => {
     const [ sort, setSort ] = useState("size")
 
-    // Get display message from enum
-    
-    function getSearchMessage(searchState) {
-        if (searchState === SearchState.VALIDATING) {
-            return "Validating tests"
-        } else if (searchState === SearchState.SEARCHING) {
-            return "Searching"
-        } else if (searchState === SearchState.ERROR) {
-            if (result?.error) {
-                return "Search error: " + result.error
-            }
-            return "Search error"
-        }
-    }
-
-    return (
+    return result?.SOLUTION ? (
         <>
-            <div className="results">
-                <h2 className="title">
-                    {searchState !== SearchState.NONE ? (
-                        <>
-                            {getSearchMessage(searchState, result)}
-                            {searchState !== SearchState.ERROR ? <LoadingRing size="1.6rem" border="4px" /> : <></>}
-                        </>
-                    ) : result?.SOLUTION ? (
-                        `Found ${result.SOLUTION.length} search results out of ${result.COUNT[0].attributes.TOTAL} candidates`
-                    ) : <></>}
-                </h2>
-                {result?.SOLUTION ? (
-                    <div className="sort">
-                        Sort by
-                        <button
-                            className={"sort-type" + (sort === "size" ? " selected" : "")}
-                            onClick={() => setSort("size")}
-                        >
-                            CODE SIZE
-                        </button>
-                        <button
-                            className={"sort-type" + (sort === "complexity" ? " selected" : "")}
-                            onClick={() => setSort("complexity")}
-                        >
-                            COMPLEXITY
-                        </button>
-                        <button
-                            className={"sort-type" + (sort === "efficiency" ? " selected" : "")}
-                            onClick={() => setSort("efficiency")}
-                        >
-                            EFFICIENCY
-                        </button>
-                    </div>
-                ) : <></>}
-                {result?.SOLUTION ? <CodeResults results={result.SOLUTION} sort={sort} /> : <></>}
+            <div className="sort">
+                Sort by
+                <button
+                    className={"sort-type" + (sort === "size" ? " selected" : "")}
+                    onClick={() => setSort("size")}
+                >
+                    CODE SIZE
+                </button>
+                <button
+                    className={"sort-type" + (sort === "complexity" ? " selected" : "")}
+                    onClick={() => setSort("complexity")}
+                >
+                    COMPLEXITY
+                </button>
+                <button
+                    className={"sort-type" + (sort === "efficiency" ? " selected" : "")}
+                    onClick={() => setSort("efficiency")}
+                >
+                    EFFICIENCY
+                </button>
             </div>
+            <CodeResults results={result.SOLUTION} sort={sort} />
             <style jsx>{`
-                .title {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: flex-start;
-                    align-items: center;
-                    gap: 1rem;
-                    font-size: 1.5rem;
-                    font-weight: normal;
-                    margin-bottom: 10px;
-                }
-
                 .sort {
                     display: flex;
                     flex-direction: row;
@@ -245,8 +204,7 @@ const SearchResults = ({ searchState, result }) => {
                 }
             `}</style>
         </>
-    )
+    ) : (<></>)
 }
 
 export default SearchResults
-export { SearchState }
