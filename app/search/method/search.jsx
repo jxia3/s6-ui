@@ -243,6 +243,7 @@ const MethodSearch = () => {
     return (
         <>
             <SearchBox
+                searchState={searchState}
                 description={description}
                 setDescription={setDescription}
                 descriptionError={descriptionError}
@@ -261,16 +262,14 @@ const MethodSearch = () => {
                 testOptions={testOptions}
                 result={result}
             />
-            {searchState === SearchState.NONE ? (
-                <>
-                    <CaseSelect
-                        testOptions={testOptions}
-                        setSearchState={setSearchState}
-                        setResult={setResult}
-                    />
-                    <SearchResults result={result} />
-                </>
-            ) : (<></>)}
+            <CaseSelect
+                testOptions={testOptions}
+                tests={tests}
+                searchState={searchState}
+                setSearchState={setSearchState}
+                setResult={setResult}
+            />
+            <SearchResults result={result} />
         </>
     )
 }

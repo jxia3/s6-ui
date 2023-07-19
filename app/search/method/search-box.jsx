@@ -1,9 +1,11 @@
+import { SearchState } from "../status.jsx"
 import TextInput from "./input.jsx"
 import Tests from "./tests.jsx"
 
 // Search details card
 
 const SearchBox = ({
+    searchState,
     description,
     setDescription,
     descriptionError,
@@ -63,7 +65,10 @@ const SearchBox = ({
                     monospace
                 />
                 <Tests tests={tests} setTests={setTests} />
-                <button className="search" onClick={search}>SEARCH</button>
+                <button
+                    className={`search ${searchState !== SearchState.NONE ? "search-disabled" : ""}`}
+                    onClick={search}
+                >SEARCH</button>
             </div>
             <style jsx>{`
                 .card {
@@ -89,6 +94,11 @@ const SearchBox = ({
 
                 .search:hover {
                     background-color: var(--color-extra-dark);
+                }
+
+                .search-disabled {
+                    cursor: auto;
+                    background-color: var(--color) !important;
                 }
             `}</style>
         </>

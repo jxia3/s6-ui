@@ -44,7 +44,7 @@ const SearchStatus = ({ searchState, testOptions, result }) => {
             </h2>
             <style jsx>{`
                 .status {
-                    display: flex;
+                    display: inline-flex;
                     flex-direction: row;
                     justify-content: flex-start;
                     align-items: center;
