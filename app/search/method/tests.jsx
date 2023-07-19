@@ -10,6 +10,7 @@ const Tests = ({ tests, setTests }) => {
         setTests(tests.toSpliced(index, 1, {
             ...tests[index],
             [prop]: value,
+            ...(prop === "comparator" && value === "<??>" ? { right: "" } : null),
         }))
     }
 
@@ -71,12 +72,13 @@ const Tests = ({ tests, setTests }) => {
                                 <option value="throws">throws</option>
                                 <option value="===">===</option>
                                 <option value="!==">!==</option>
-                                {/*<option value="<??>">{"<??>"}</option>*/}
+                                <option value="<??>">{"<??>"}</option>
                             </select>
                             <input
                                 className={"input " + Monospace.className}
                                 type="text"
                                 value={test.right}
+                                disabled={test.comparator === "<??>"}
                                 onChange={event => updateTest(index, "right", event.target.value)}
                                 onFocus={() => updateTest(index, "error", null)}
                                 onBlur={() => updateTests()}

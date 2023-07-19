@@ -26,15 +26,25 @@ const MethodSearch = () => {
     // Search for method
 
     async function search() {
+        // Validate search details
+
         setResult(null)
         setSearchState(SearchState.VALIDATING)
+
         const error = validateSearch()
-        const testData = await validateTests()
-        if (error || testData.error) {
+        if (error) {
             setSearchState(SearchState.NONE)
             return
         }
+        const testData = await validateTests()
+        if (testData.error) {
+            setSearchState(SearchState.NONE)
+            return
+        }
+
         setSearchState(SearchState.SEARCHING)
+
+        // Send search request
 
         try {
             const searchResult = await fetch("/api/method/search", {
@@ -47,15 +57,29 @@ const MethodSearch = () => {
             }).then(response => response.json())
         
             if (searchResult?.error) {
+                // Request error
+
                 setSearchState(SearchState.ERROR)
                 setResult({ error: searchResult.error })
             } else if (searchResult?.result?.SOLUTIONS) {
+                // Found search results
+
                 setSearchState(SearchState.NONE)
                 setResult(searchResult.result.SOLUTIONS)
             } else if (searchResult?.result?.USERINPUT) {
-                console.log(searchResult.result)
+                // Parse test case selection response
+
                 setSearchState(SearchState.NONE)
-                setTestOptions(searchResult.result.USERINPUT)
+                if (!Array.isArray(searchResult.result.USERINPUT.TESTCASE)) {
+                    searchResult.result.USERINPUT.TESTCASE = [searchResult.result.USERINPUT.TESTCASE]
+                }
+                setTestOptions({
+                    ...searchResult.result.USERINPUT,
+                    cases: searchResult.result.USERINPUT.TESTCASE.reduce(
+                        (count, testCase) => count + testCase.USERCASE.length,
+                        0
+                    ),
+                })
             } else {
                 console.error(new Error("Unable to interpret server response " + JSON.stringify(searchResult)))
             }
@@ -68,6 +92,8 @@ const MethodSearch = () => {
     // Check method description, signature, and tests
 
     function validateSearch() {
+        // Check required fields
+
         let error = declarationError ? true : false
         if (!description) {
             setDescriptionError("Missing description")
@@ -81,7 +107,9 @@ const MethodSearch = () => {
             error = true
         }
 
-        if (tests.length === 1 && (!tests[0].left || !tests[0].right)) {
+        // Check test cases for completeness
+
+        if (tests.length === 1) {
             setTests([{
                 ...tests[0],
                 error: "No tests set",
@@ -91,7 +119,7 @@ const MethodSearch = () => {
             let testError = false
             const newTests = []
             for (const test of tests.slice(0, -1)) {
-                if (!test.left || !test.right) {
+                if (!test.left || (test.comparator !== "<??>" && !test.right)) {
                     newTests.push({
                         ...test,
                         error: "Test not complete",
@@ -121,6 +149,8 @@ const MethodSearch = () => {
 
     async function validateTests() {
         try {
+            // Send validation request
+
             const testResult = await fetch("/api/method/tests", {
                 method: "POST",
                 body: JSON.stringify({
@@ -138,6 +168,8 @@ const MethodSearch = () => {
                 return { error: true }
             }
             const testCases = !Array.isArray(testResult) ? [testResult] : testResult
+
+            // Update test cases with possible errors
 
             let error = false
             const newTests = [...tests]

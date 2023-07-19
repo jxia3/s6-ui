@@ -37,8 +37,8 @@ const SearchStatus = ({ searchState, testOptions, result }) => {
                     </>
                 ) : result?.SOLUTION ? (
                     `Found ${result.SOLUTION.length} search results out of ${result.COUNT[0].attributes.TOTAL} candidates`
-                ) : testOptions?.length ? (
-                    "Found " + testOptions.length + " test case results"
+                ) : testOptions?.cases ? (
+                    "Found " + testOptions.cases + " test case options"
                 ) : <></>}
             </h2>
             <style jsx>{`
