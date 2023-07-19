@@ -82,7 +82,7 @@ const Tests = ({ tests, setTests }) => {
                                 onChange={event => updateTest(index, "right", event.target.value)}
                                 onFocus={() => updateTest(index, "error", null)}
                                 onBlur={() => updateTests()}
-                                style={{ border: test.error ? "2px solid var(--error)" : "" }}
+                                style={{ border: test.comparator !== "<??>" && test.error ? "2px solid var(--error)" : "" }}
                             ></input>
                         </div>
                         {test.error ? <div className={`error ${Monospace.className}`}>Error: {test.error}</div> : <></>}

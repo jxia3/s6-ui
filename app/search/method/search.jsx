@@ -28,6 +28,9 @@ const MethodSearch = () => {
     async function search() {
         // Validate search details
 
+        if (searchState !== SearchState.NONE) {
+            return
+        }
         setTestOptions(null)
         setResult(null)
         setSearchState(SearchState.VALIDATING)
@@ -187,14 +190,15 @@ const MethodSearch = () => {
                     newTests.push(newTest)
                     continue
                 }
-                if (testCases[t].CALL?.INPUT?.VALUE && testCases[t].CALL.INPUT.VALUE !== newTest.left) {
-                    newTest.left = testCases[t].CALL.INPUT.VALUE
+                if (testCases[t].CALL?.INPUT?.VALUE
+                    && testCases[t].CALL.INPUT.VALUE.toString() !== newTest.left) {
+                    newTest.left = testCases[t].CALL.INPUT.VALUE.toString()
                     updated = true
                 }
                 if (newTest.comparator !== "<??>"
                     && testCases[t].CALL?.OUTPUT?.VALUE
-                    && testCases[t].CALL.OUTPUT.VALUE !== newTest.right) {
-                    newTest.right = testCases[t].CALL.OUTPUT.VALUE
+                    && testCases[t].CALL.OUTPUT.VALUE.toString() !== newTest.right) {
+                    newTest.right = testCases[t].CALL.OUTPUT.VALUE.toString()
                     updated = true
                 }
                 newTests.push(newTest)
