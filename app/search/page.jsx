@@ -13,12 +13,12 @@ const SearchPage = () => {
 
     return (
         <>
-            <div className="search-type">Select search type</div>
+            {/*<div className="search-type">Select search type</div>
             <div className="search-buttons">
                 <button className="search-button" onClick={() => router.push("/search?type=method")}>
                     METHODS
                 </button>
-            </div>
+            </div>*/}
             <MethodSearch />
             <style jsx>{`
                 .search-type {

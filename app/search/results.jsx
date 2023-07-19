@@ -19,7 +19,6 @@ const SearchState = {
 // Code results list component
 
 const CodeResults = ({ results, sort }) => {
-    console.log(results)
     const [ resultList, setResultList ] = useState([])
 
     // Run highlight.js on code blocks
@@ -159,7 +158,7 @@ const CodeResults = ({ results, sort }) => {
 const SearchResults = ({ result }) => {
     const [ sort, setSort ] = useState("size")
 
-    return result?.SOLUTION ? (
+    return result?.SOLUTION?.length ? (
         <>
             <div className="sort">
                 Sort by

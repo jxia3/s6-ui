@@ -28,6 +28,7 @@ const MethodSearch = () => {
     async function search() {
         // Validate search details
 
+        setTestOptions(null)
         setResult(null)
         setSearchState(SearchState.VALIDATING)
 
@@ -65,10 +66,14 @@ const MethodSearch = () => {
                 // Found search results
 
                 setSearchState(SearchState.NONE)
-                setResult(searchResult.result.SOLUTIONS)
+                setResult({
+                    SOLUTION: [],
+                    ...searchResult.result.SOLUTIONS,
+                })
             } else if (searchResult?.result?.USERINPUT) {
                 // Parse test case selection response
 
+                console.log("search result", searchResult)
                 setSearchState(SearchState.NONE)
                 if (!Array.isArray(searchResult.result.USERINPUT.TESTCASE)) {
                     searchResult.result.USERINPUT.TESTCASE = [searchResult.result.USERINPUT.TESTCASE]
@@ -169,23 +174,44 @@ const MethodSearch = () => {
             }
             const testCases = !Array.isArray(testResult) ? [testResult] : testResult
 
-            // Update test cases with possible errors
+            // Update test cases with changed values and possible errors
 
             let error = false
-            const newTests = [...tests]
+            let updated = false
+            const newTests = []
             for (let t = 0; t < testCases.length; t ++) {
+                const newTest = { ...tests[t] }
                 if (testCases[t].ERROR) {
-                    newTests[t] = {
-                        ...newTests[t],
-                        error: testCases[t].ERROR.attributes.MESSAGE,
-                    }
+                    newTest.error = testCases[t].ERROR.attributes.MESSAGE
                     error = true
+                    newTests.push(newTest)
+                    continue
                 }
+                if (testCases[t].CALL?.INPUT?.VALUE && testCases[t].CALL.INPUT.VALUE !== newTest.left) {
+                    newTest.left = testCases[t].CALL.INPUT.VALUE
+                    updated = true
+                }
+                if (newTest.comparator !== "<??>"
+                    && testCases[t].CALL?.OUTPUT?.VALUE
+                    && testCases[t].CALL.OUTPUT.VALUE !== newTest.right) {
+                    newTest.right = testCases[t].CALL.OUTPUT.VALUE
+                    updated = true
+                }
+                newTests.push(newTest)
             }
+            newTests.push({
+                left: "",
+                comparator: "==",
+                right: "",
+                error: null,
+            })
 
             if (error) {
                 setTests(newTests)
                 return { error: true }
+            }
+            if (updated) {
+                setTests(newTests)
             }
             return { data: testCases }
         } catch(error) {
