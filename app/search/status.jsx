@@ -36,9 +36,10 @@ const SearchStatus = ({ searchState, testOptions, result }) => {
                         {searchState !== SearchState.ERROR ? <LoadingRing size="1.6rem" border="4px" /> : <></>}
                     </>
                 ) : result?.SOLUTION ? (
-                    `Found ${result.SOLUTION.length} search results out of ${result.COUNT[0].attributes.TOTAL} candidates`
+                    `Found ${result.SOLUTION.length} search results out of ${result.COUNT[0].attributes.TOTAL} candidate`
+                        + (result.COUNT[0].attributes.TOTAL !== 1 ? "s" : "")
                 ) : testOptions?.cases ? (
-                    "Found " + testOptions.cases + " test case options"
+                    `Found ${testOptions.cases} test case option${testOptions.cases !== 1 ? "s" : ""}`
                 ) : <></>}
             </h2>
             <style jsx>{`

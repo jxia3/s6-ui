@@ -128,8 +128,7 @@ export async function POST(request) {
             }
             return NextResponse.json({ error: "Server request failed" }, { status: 400 })
         }
-    } catch(error) {
-        console.log(error)
+    } catch {
         return NextResponse.json({ error: "Invalid JSON content" }, { status: 400 })
     }
 }

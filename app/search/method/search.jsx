@@ -28,9 +28,7 @@ const MethodSearch = () => {
     async function search() {
         // Validate search details
 
-        if (searchState !== SearchState.NONE) {
-            return
-        }
+        if (searchState !== SearchState.NONE) return
         setTestOptions(null)
         setResult(null)
         setSearchState(SearchState.VALIDATING)
@@ -76,17 +74,22 @@ const MethodSearch = () => {
             } else if (searchResult?.result?.USERINPUT) {
                 // Parse test case selection response
 
-                console.log("search result", searchResult)
                 setSearchState(SearchState.NONE)
                 if (!Array.isArray(searchResult.result.USERINPUT.TESTCASE)) {
                     searchResult.result.USERINPUT.TESTCASE = [searchResult.result.USERINPUT.TESTCASE]
                 }
+                
+                let cases = 0
+                for (const testCase of searchResult.result.USERINPUT.TESTCASE) {
+                    if (!Array.isArray(testCase.USERCASE)) {
+                        testCase.USERCASE = [testCase.USERCASE]
+                    }
+                    cases += testCase.USERCASE.length
+                }
+
                 setTestOptions({
                     ...searchResult.result.USERINPUT,
-                    cases: searchResult.result.USERINPUT.TESTCASE.reduce(
-                        (count, testCase) => count + testCase.USERCASE.length,
-                        0
-                    ),
+                    cases,
                 })
             } else {
                 console.error(new Error("Unable to interpret server response " + JSON.stringify(searchResult)))
@@ -190,19 +193,22 @@ const MethodSearch = () => {
                     newTests.push(newTest)
                     continue
                 }
-                if (testCases[t].CALL?.INPUT?.VALUE
-                    && testCases[t].CALL.INPUT.VALUE.toString() !== newTest.left) {
-                    newTest.left = testCases[t].CALL.INPUT.VALUE.toString()
+
+                const leftValue = formatValue(testCases[t].CALL?.INPUT)
+                if (leftValue !== newTest.left) {
+                    newTest.left = leftValue
                     updated = true
                 }
-                if (newTest.comparator !== "<??>"
-                    && testCases[t].CALL?.OUTPUT?.VALUE
-                    && testCases[t].CALL.OUTPUT.VALUE.toString() !== newTest.right) {
-                    newTest.right = testCases[t].CALL.OUTPUT.VALUE.toString()
-                    updated = true
+                if (newTest.comparator !== "<??>") {
+                    const rightValue = formatValue(testCases[t].CALL?.OUTPUT)
+                    if (rightValue !== newTest.right) {
+                        newTest.right = rightValue
+                        updated = true
+                    }
                 }
                 newTests.push(newTest)
             }
+
             newTests.push({
                 left: "",
                 comparator: "==",
@@ -222,6 +228,16 @@ const MethodSearch = () => {
             console.error(error)
             return { error: true }
         }
+    }
+
+    // Format value from test validation request
+
+    function formatValue(values) {
+        if (!values) return
+        if (Array.isArray(values)) {
+            return values.map(value => value.VALUE).join(", ")
+        }
+        return values.VALUE.toString()
     }
 
     return (
