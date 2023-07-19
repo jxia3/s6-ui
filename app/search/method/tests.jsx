@@ -107,10 +107,12 @@ const Tests = ({ tests, setTests }) => {
 
                 .input {
                     width: 100%;
+                    font-size: 0.8rem;
                     padding: 2px 5px;
                 }
 
                 .comparator {
+                    font-size: 0.8rem;
                     padding: 2px 5px;
                     margin: 0 0.3rem;
                 }

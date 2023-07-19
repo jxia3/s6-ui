@@ -11,8 +11,6 @@ const SearchPage = () => {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [ searchType ] = useState(getSearchType(searchParams.get("type")))
-    const [ searchState, setSearchState ] = useState(SearchState.NONE)
-    const [ result, setResult ] = useState(null)
 
     return (
         <>
@@ -22,8 +20,7 @@ const SearchPage = () => {
                     METHODS
                 </button>
             </div>
-            <MethodSearch setSearchState={setSearchState} setResult={setResult} />
-            <SearchResults searchState={searchState} result={result} />
+            <MethodSearch />
             <style jsx>{`
                 .search-type {
                     font-size: 1.2rem;
