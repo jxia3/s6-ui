@@ -38,7 +38,7 @@ const TestCase = ({
                 >
                     REJECT
                 </button>
-                <div className={`value ${Monospace.className}`}>{result.VALUE}</div>
+                <div className={`value ${Monospace.className}`}>{result.VALUE.toString()}</div>
             </div>
             <style jsx>{`
                 .result {
