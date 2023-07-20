@@ -63,6 +63,7 @@ const MethodSearch = () => {
 
                 setSearchState(SearchState.ERROR)
                 setResult({ error: searchResult.error })
+                console.error(searchResult.error)
             } else if (searchResult?.result?.SOLUTIONS) {
                 // Found search results
 
@@ -92,7 +93,7 @@ const MethodSearch = () => {
                     cases,
                 })
             } else {
-                console.error(new Error("Unable to interpret server response " + JSON.stringify(searchResult)))
+                console.error("Unable to interpret server response " + JSON.stringify(searchResult))
             }
         } catch(error) {
             setSearchState(SearchState.ERROR)
@@ -175,7 +176,7 @@ const MethodSearch = () => {
             }).then(response => response.json())
 
             if (testResult?.error) {
-                console.error(new Error(testResult.error))
+                console.error(testResult.error)
                 return { error: true }
             }
             const testCases = !Array.isArray(testResult) ? [testResult] : testResult

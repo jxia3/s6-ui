@@ -140,12 +140,65 @@ const CaseSelect = ({
 
     // Continue search with selected cases
 
-    function continueSearch() {
-        console.log("continuing search")
-        console.log(selections)
+    async function continueSearch() {
+        // Get selected IDs from test cases
+
+        let selected = false
+        const selectData = {}
+        for (let t = 0; t < testOptions.TESTCASE.length; t ++) {
+            const testCase = testOptions.TESTCASE[t]
+            selectData[testCase.attributes.NAME] = {
+                selected: [],
+                rejected: [],
+            }
+            for (let r = 0; r < testCase.USERCASE.length; r ++) {
+                if (selections[t][r]) {
+                    selectData[testCase.attributes.NAME].selected.push(testCase.USERCASE[r].attributes.IDS)
+                } else {
+                    selectData[testCase.attributes.NAME].rejected.push(testCase.USERCASE[r].attributes.IDS)
+                }
+            }
+            if (selectData[testCase.attributes.NAME].selected.length) {
+                selected = true
+            }
+        }
+        if (!selected) return
 
         setTestOptions(null)
         setSearchState(SearchState.SEARCHING)
+
+        // Send selection request
+
+        try {
+            const selectResult = await fetch("/api/method/select-cases", {
+                method: "POST",
+                body: JSON.stringify({
+                    userId: testOptions.attributes.UID,
+                    testCases: selectData,
+                }),
+            }).then(response => response.json())
+
+            if (selectResult?.error) {
+                // Request error
+
+                setSearchState(SearchState.ERROR)
+                setResult({ error: selectResult.error })
+                console.error(selectResult.error)
+            } else if (selectResult?.result?.SOLUTIONS) {
+                // Found search results
+
+                setSearchState(SearchState.NONE)
+                setResult({
+                    SOLUTION: [],
+                    ...selectResult.result.SOLUTIONS,
+                })
+            } else {
+                console.error("Unable to interpret server response " + JSON.stringify(selectResult))
+            }
+        } catch(error) {
+            setSearchState(SearchState.ERROR)
+            console.error(error)
+        }
     }
 
     return testOptions?.TESTCASE ? (
@@ -195,7 +248,7 @@ const CaseSelect = ({
                     align-items: flex-start;
                     gap: 10px;
                     border-top: 1px solid #888888;
-                    padding: 20px 0 10px 0;
+                    padding: 20px 0 15px 0;
                 }
 
                 .case:last-of-type {
