@@ -51,7 +51,7 @@ const SearchStatus = ({ searchState, testOptions, result }) => {
                     gap: 1rem;
                     font-size: 1.5rem;
                     font-weight: normal;
-                    margin-bottom: 10px;
+                    margin-bottom: 12px;
                 }
             `}</style>
         </>

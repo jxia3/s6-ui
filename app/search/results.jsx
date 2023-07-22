@@ -1,3 +1,4 @@
+import beautify from "js-beautify/js"
 import hljs from "highlight.js"
 import { useEffect, useState } from "react"
 
@@ -7,25 +8,16 @@ hljs.configure({
     ignoreUnescapedHTML: true,
 })
 
-// Search state enum
-
-const SearchState = {
-    NONE: 0,
-    VALIDATING: 1,
-    SEARCHING: 2,
-    ERROR: 3,
-}
-
 // Code results list component
 
-const CodeResults = ({ results, sort }) => {
+const CodeResults = ({ results, sort, format }) => {
     const [ resultList, setResultList ] = useState([])
 
     // Run highlight.js on code blocks
 
     useEffect(() => {
         hljs.highlightAll()
-    }, [resultList])
+    }, [resultList, format])
 
     // Change results sort
 
@@ -68,7 +60,9 @@ const CodeResults = ({ results, sort }) => {
                         <h3 className="title">{result.NAME}</h3>
                         <pre className="code">
                             <code className="content language-java">
-                                {result.CODE}
+                                {format ?
+                                    beautify(result.CODE, { brace_style: "collapse,preserve-inline" }) :
+                                    result.CODE}
                             </code>
                         </pre>
                         <div className="controls">
@@ -157,49 +151,66 @@ const CodeResults = ({ results, sort }) => {
 
 const SearchResults = ({ result }) => {
     const [ sort, setSort ] = useState("size")
+    const [ format, setFormat ] = useState(true)
 
     return result?.SOLUTION?.length ? (
         <>
-            <div className="sort">
+            <div className="controls sort">
                 Sort by
                 <button
-                    className={"sort-type" + (sort === "size" ? " selected" : "")}
+                    className={"control sort-type" + (sort === "size" ? " selected" : "")}
                     onClick={() => setSort("size")}
                 >
                     CODE SIZE
                 </button>
                 <button
-                    className={"sort-type" + (sort === "complexity" ? " selected" : "")}
+                    className={"control sort-type" + (sort === "complexity" ? " selected" : "")}
                     onClick={() => setSort("complexity")}
                 >
                     COMPLEXITY
                 </button>
                 <button
-                    className={"sort-type" + (sort === "efficiency" ? " selected" : "")}
+                    className={"control sort-type" + (sort === "efficiency" ? " selected" : "")}
                     onClick={() => setSort("efficiency")}
                 >
                     EFFICIENCY
                 </button>
             </div>
-            <CodeResults results={result.SOLUTION} sort={sort} />
+            <div className="controls format">
+                Code formatting
+                <button className="control" onClick={() => setFormat(!format)}>
+                    {format ? "ENABLED" : "DISABLED"}
+                </button>
+            </div>
+            <CodeResults results={result.SOLUTION} sort={sort} format={format} />
             <style jsx>{`
-                .sort {
+                .controls {
                     display: flex;
                     flex-direction: row;
                     justify-content: flex-start;
                     align-items: center;
                     gap: 0.5rem;
-                    margin-bottom: 20px;
+                }
+
+                .sort {
+                    margin-bottom: 10px;
+                }
+
+                .control {
+                    font-size: 0.8rem;
+                    padding: 0.35rem 0.8rem;
                 }
 
                 .sort-type {
-                    font-size: 0.8rem;
-                    padding: 0.35rem 0.8rem;
                     border: 2px solid #FFFFFF;
                 }
 
                 .selected {
                     border: 2px solid var(--color-dark);
+                }
+
+                .format {
+                    margin-bottom: 20px;
                 }
             `}</style>
         </>
