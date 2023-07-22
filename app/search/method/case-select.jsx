@@ -228,7 +228,7 @@ const CaseSelect = ({
                 .continue {
                     font-size: 0.9rem;
                     padding: 0.5rem 1rem;
-                    margin-bottom: 10px;
+                    margin-bottom: 20px;
                 }
 
                 .cases {
@@ -237,7 +237,6 @@ const CaseSelect = ({
                     flex-direction: column;
                     justify-content: flex-start;
                     align-items: flex-start;
-                    margin-top: 10px;
                 }
 
                 .case {
