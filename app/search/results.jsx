@@ -31,6 +31,26 @@ const CodeResults = ({ results, sort, format }) => {
         }
     }, [results, sort])
 
+    // Format code and fix angle brackets
+
+    function formatCode(code) {
+        return beautify(code, {
+            brace_style: "collapse,preserve-inline",
+            e4x: true,
+        })
+            .replace(
+                // Match type parameter lists
+                /( {1}[A-Za-z]{1}[\w$]*) {1}<{1} {1}([A-Za-z]{1}[\w$]*(?:, )*)* {1}>{1}/g,
+                "$1<$2>"
+            )
+            .replaceAll("> ()", ">()")
+            .replace(
+                // Match for-each loops
+                /(for \([A-Za-z]{1}[\w$<>, ]* ){1}([A-Za-z]{1}[\w$]*){1}(?:: ){1}/g,
+                "$1$2 : "
+            )
+    }
+
     // Copy code to clipboard
 
     async function copyResult(event, code) {
@@ -48,30 +68,31 @@ const CodeResults = ({ results, sort, format }) => {
     return (
         <>
             <div className="results">
-                {resultList.map(result => (
-                    <div
-                        className="result"
-                        key={result?.TRANSFORMS?.TRANSFORM ?
-                                typeof result.TRANSFORMS.TRANSFORM === "string" ?
-                                    result.SOLSRC + "-" + result.TRANSFORMS.TRANSFORM :
-                                    result.SOLSRC + "-" + result.TRANSFORMS.TRANSFORM.join("-") :
-                                result.SOLSRC}
-                    >
-                        <h3 className="title">{result.NAME}</h3>
-                        <pre className="code">
-                            <code className="content language-java">
-                                {format ?
-                                    beautify(result.CODE, { brace_style: "collapse,preserve-inline" }) :
-                                    result.CODE}
-                            </code>
-                        </pre>
-                        <div className="controls">
-                            <button className="control" onClick={event => copyResult(event, result.CODE)}>COPY CODE</button>
-                            <a className="control view-raw" href={result.SOLSRC.slice(7)} target="_blank">VIEW RAW</a>
-                            <button className="control">VIEW LICENSE</button>
+                {resultList.map(result => {
+                    const code = format ? formatCode(result.CODE) : result.CODE
+                    return (
+                        <div
+                            className="result"
+                            key={result?.TRANSFORMS?.TRANSFORM ?
+                                    typeof result.TRANSFORMS.TRANSFORM === "string" ?
+                                        result.SOLSRC + "-" + result.TRANSFORMS.TRANSFORM :
+                                        result.SOLSRC + "-" + result.TRANSFORMS.TRANSFORM.join("-") :
+                                    result.SOLSRC}
+                        >
+                            <h3 className="title">{result.NAME}</h3>
+                            <pre className="code">
+                                <code className="content language-java">
+                                    {code}
+                                </code>
+                            </pre>
+                            <div className="controls">
+                                <button className="control" onClick={event => copyResult(event, code)}>COPY CODE</button>
+                                <a className="control view-raw" href={result.SOLSRC.slice(7)} target="_blank">VIEW RAW</a>
+                                <button className="control">VIEW LICENSE</button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    )
+                })}
             </div>
             <style jsx>{`
                 .results {
