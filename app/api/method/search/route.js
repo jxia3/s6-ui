@@ -72,10 +72,14 @@ export async function POST(request) {
                 }),
             },
         })
-        const contextData = xmlBuilder.build({
+        const optionsData = xmlBuilder.build({
             SECURITY: {},
             CONTRACTS: {},
-            CONTEXT: {},
+            CONTEXT: {
+                attributes: {
+                    ...(data.contextFile ? { FILE: data.contextFile } : null),
+                },
+            },
             KEYWORDS: {
                 KEYWORD: [...data.description.split(" ").map(word => ({
                     cdata: word,
@@ -93,7 +97,7 @@ export async function POST(request) {
                     "X-Gwt-Module-Base": "http://conifer2.cs.brown.edu:8180/S6Search/",
                     "x-Gwt-Permutation": "CF96D742F2DD6F6198B9E8C4AAD188EB",
                 },
-                body: prefix + signatureData + testData + contextData + postfix,
+                body: prefix + signatureData + testData + optionsData + postfix,
                 signal: AbortSignal.timeout(300000),
             })
             const searchResult = await searchRequest.text()

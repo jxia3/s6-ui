@@ -5,7 +5,6 @@ import { XMLBuilder, XMLParser } from "fast-xml-parser"
 // Create XML builder and parser
 
 const xmlBuilder = new XMLBuilder({
-    arrayNodeName: "TEST",
     ignoreAttributes: false,
     attributesGroupName: "attributes",
     suppressBooleanAttributes: false,
@@ -52,7 +51,7 @@ export async function POST(request) {
         // Convert request data to XML
 
         const prefix = "7|0|6|http://conifer2.cs.brown.edu:8180/S6Search/|19EECCB9D9B69A8C13196E7A93090849|edu.brown.cs.s6.sviweb.client.SviwebService|sendToServer|java.lang.String/2004016611|<CHECK WHAT='TESTS'>"
-        const postfix = "<CONTEXT /></CHECK>|1|2|3|4|1|5|6|"
+        const postfix = "</CHECK>|1|2|3|4|1|5|6|"
         const signatureData = xmlBuilder.build({
             SIGNATURE: {
                 METHOD: {
@@ -72,21 +71,30 @@ export async function POST(request) {
                 },
             },
         })
-        const testData = xmlBuilder.build(data.tests.map((test, index) => ({
-            attributes: {
-                TESTID: index,
-                TESTNAME: "SVIWEB_" + (index + 1),
-                TYPE: "CALL",
-                METHOD: data.method.NAME,
-                OP: getOperation(test.comparator),
+        const testData = xmlBuilder.build({
+            TEST: data.tests.map((test, index) => ({
+                attributes: {
+                    TESTID: index,
+                    TESTNAME: "SVIWEB_" + (index + 1),
+                    TYPE: "CALL",
+                    METHOD: data.method.NAME,
+                    OP: getOperation(test.comparator),
+                },
+                INPUT: {
+                    cdata: test.left,
+                },
+                OUTPUT: {
+                    cdata: test.right,
+                },
+            })),
+        })
+        const contextData = xmlBuilder.build({
+            CONTEXT: {
+                attributes: {
+                    ...(data.contextFile ? { FILE: data.contextFile } : null),
+                },
             },
-            INPUT: {
-                cdata: test.left,
-            },
-            OUTPUT: {
-                cdata: test.right,
-            },
-        })))
+        })
 
         try {
             // Send test validation request to server
@@ -98,7 +106,7 @@ export async function POST(request) {
                     "X-Gwt-Module-Base": "http://conifer2.cs.brown.edu:8180/S6Search/",
                     "x-Gwt-Permutation": "CF96D742F2DD6F6198B9E8C4AAD188EB",
                 },
-                body: prefix + signatureData + testData + postfix,
+                body: prefix + signatureData + testData + contextData + postfix,
                 signal: AbortSignal.timeout(60000),
             })
             const checkResult = await checkRequest.text()

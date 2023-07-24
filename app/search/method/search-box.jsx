@@ -121,12 +121,24 @@ const SearchOptions = ({ setContextFile }) => {
         }
     }
 
+    // Clear selected file
+
+    function clearFile() {
+        document.getElementById("context-file").value = null
+    }
+
     return enabled ? (
         <>
             <div className="card">
                 <h2 className="title">Options</h2>
                 <div className="label">Search context</div>
-                <input className="file-input" type="file" onChange={setFile}></input>
+                <input
+                    id="context-file"
+                    className="file-input"
+                    type="file"
+                    onChange={setFile}
+                ></input>
+                <button className="clear" onClick={clearFile}>CLEAR</button>
                 <div className="note">Note: this is a legacy feature and may not work as expected</div>
             </div>
             <style jsx>{`
@@ -155,7 +167,18 @@ const SearchOptions = ({ setContextFile }) => {
                 }
 
                 .file-input {
+                    margin-bottom: 6px;
+                }
+
+                .clear {
+                    font-size: 0.8rem;
+                    background-color: var(--color-dark);
+                    padding: 0.35rem 0.8rem;
                     margin-bottom: 20px;
+                }
+
+                .clear:hover {
+                    background-color: var(--color-extra-dark);
                 }
 
                 .note {

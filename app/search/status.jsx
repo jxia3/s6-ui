@@ -4,8 +4,8 @@ import LoadingRing from "../../components/loading-ring.jsx"
 
 const SearchState = {
     NONE: 0,
-    VALIDATING: 1,
-    UPLOADING: 2,
+    UPLOADING: 1,
+    VALIDATING: 2,
     SEARCHING: 3,
     ERROR: 4,
 }
@@ -16,10 +16,10 @@ const SearchStatus = ({ searchState, testOptions, result }) => {
     // Get display message from enum
     
     function getSearchMessage(searchState) {
-        if (searchState === SearchState.VALIDATING) {
-            return "Validating tests"
-        } else if (searchState === SearchState.UPLOADING) {
+        if (searchState === SearchState.UPLOADING) {
             return "Uploading context"
+        } else if (searchState === SearchState.VALIDATING) {
+            return "Validating tests"
         } else if (searchState === SearchState.SEARCHING) {
             return "Searching"
         } else if (searchState === SearchState.ERROR) {
