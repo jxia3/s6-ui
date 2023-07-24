@@ -5,8 +5,9 @@ import LoadingRing from "../../components/loading-ring.jsx"
 const SearchState = {
     NONE: 0,
     VALIDATING: 1,
-    SEARCHING: 2,
-    ERROR: 3,
+    UPLOADING: 2,
+    SEARCHING: 3,
+    ERROR: 4,
 }
 
 // Search status component
@@ -17,6 +18,8 @@ const SearchStatus = ({ searchState, testOptions, result }) => {
     function getSearchMessage(searchState) {
         if (searchState === SearchState.VALIDATING) {
             return "Validating tests"
+        } else if (searchState === SearchState.UPLOADING) {
+            return "Uploading context"
         } else if (searchState === SearchState.SEARCHING) {
             return "Searching"
         } else if (searchState === SearchState.ERROR) {

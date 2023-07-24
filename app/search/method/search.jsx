@@ -1,8 +1,8 @@
-import { SearchBox } from "./search-box.jsx"
+import { SearchBox, SearchOptions } from "./search-box.jsx"
 import SearchStatus, { SearchState } from "../status.jsx"
 import CaseSelect from "./case-select.jsx"
 import SearchResults from "../results.jsx"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 // Method search layout
 
@@ -22,6 +22,14 @@ const MethodSearch = () => {
         right: "",
         error: null,
     }])
+    const [ contextFile, setContextFile ] = useState(null)
+    const [ contextData, setContextData ] = useState(null)
+
+    // Reset context data on file change
+
+    useEffect(() => {
+        setContextData(null)
+    }, [contextFile])
 
     // Search for method
 
@@ -44,57 +52,23 @@ const MethodSearch = () => {
             return
         }
 
-        setSearchState(SearchState.SEARCHING)
+        // Upload context file
+
+        if (contextFile) {
+            setSearchState(SearchState.UPLOADING)
+            try {
+                await uploadContext()
+            } catch(error) {
+                setSearchState(SearchState.ERROR)
+                console.error(error)
+            }
+        }
 
         // Send search request
 
+        setSearchState(SearchState.SEARCHING)
         try {
-            const searchResult = await fetch("/api/method/search", {
-                method: "POST",
-                body: JSON.stringify({
-                    method,
-                    tests: testData.data,
-                    description,
-                }),
-            }).then(response => response.json())
-        
-            if (searchResult?.error) {
-                // Request error
-
-                setSearchState(SearchState.ERROR)
-                setResult({ error: searchResult.error })
-                console.error(searchResult.error)
-            } else if (searchResult?.result?.SOLUTIONS) {
-                // Found search results
-
-                setSearchState(SearchState.NONE)
-                setResult({
-                    SOLUTION: [],
-                    ...searchResult.result.SOLUTIONS,
-                })
-            } else if (searchResult?.result?.USERINPUT) {
-                // Parse test case selection response
-
-                setSearchState(SearchState.NONE)
-                if (!Array.isArray(searchResult.result.USERINPUT.TESTCASE)) {
-                    searchResult.result.USERINPUT.TESTCASE = [searchResult.result.USERINPUT.TESTCASE]
-                }
-                
-                let cases = 0
-                for (const testCase of searchResult.result.USERINPUT.TESTCASE) {
-                    if (!Array.isArray(testCase.USERCASE)) {
-                        testCase.USERCASE = [testCase.USERCASE]
-                    }
-                    cases += testCase.USERCASE.length
-                }
-
-                setTestOptions({
-                    ...searchResult.result.USERINPUT,
-                    cases,
-                })
-            } else {
-                console.error("Unable to interpret server response " + JSON.stringify(searchResult))
-            }
+            await sendSearchRequest(testData)
         } catch(error) {
             setSearchState(SearchState.ERROR)
             console.error(error)
@@ -241,23 +215,88 @@ const MethodSearch = () => {
         return values.VALUE.toString()
     }
 
+    // Read context file and upload to server
+
+    async function uploadContext() {
+        const uploadResult = await fetch("/api/method/upload-context", {
+            method: "POST",
+            body: contextFile,
+        }).then(response => response.json())
+
+        console.log(uploadResult)
+    }
+
+    // Send search request
+
+    async function sendSearchRequest(testData) {
+        const searchResult = await fetch("/api/method/search", {
+            method: "POST",
+            body: JSON.stringify({
+                method,
+                tests: testData.data,
+                description,
+            }),
+        }).then(response => response.json())
+    
+        if (searchResult?.error) {
+            // Request error
+
+            setSearchState(SearchState.ERROR)
+            setResult({ error: searchResult.error })
+            console.error(searchResult.error)
+        } else if (searchResult?.result?.SOLUTIONS) {
+            // Found search results
+
+            setSearchState(SearchState.NONE)
+            setResult({
+                SOLUTION: [],
+                ...searchResult.result.SOLUTIONS,
+            })
+        } else if (searchResult?.result?.USERINPUT) {
+            // Parse test case selection response
+
+            setSearchState(SearchState.NONE)
+            if (!Array.isArray(searchResult.result.USERINPUT.TESTCASE)) {
+                searchResult.result.USERINPUT.TESTCASE = [searchResult.result.USERINPUT.TESTCASE]
+            }
+            
+            let cases = 0
+            for (const testCase of searchResult.result.USERINPUT.TESTCASE) {
+                if (!Array.isArray(testCase.USERCASE)) {
+                    testCase.USERCASE = [testCase.USERCASE]
+                }
+                cases += testCase.USERCASE.length
+            }
+
+            setTestOptions({
+                ...searchResult.result.USERINPUT,
+                cases,
+            })
+        } else {
+            console.error("Unable to interpret server response " + JSON.stringify(searchResult))
+        }
+    }
+
     return (
         <>
-            <SearchBox
-                searchState={searchState}
-                description={description}
-                setDescription={setDescription}
-                descriptionError={descriptionError}
-                setDescriptionError={setDescriptionError}
-                declaration={declaration}
-                setDeclaration={setDeclaration}
-                declarationError={declarationError}
-                setDeclarationError={setDeclarationError}
-                setMethod={setMethod}
-                tests={tests}
-                setTests={setTests}
-                search={search}
-            />
+            <div className="input">
+                <SearchBox
+                    searchState={searchState}
+                    description={description}
+                    setDescription={setDescription}
+                    descriptionError={descriptionError}
+                    setDescriptionError={setDescriptionError}
+                    declaration={declaration}
+                    setDeclaration={setDeclaration}
+                    declarationError={declarationError}
+                    setDeclarationError={setDeclarationError}
+                    setMethod={setMethod}
+                    tests={tests}
+                    setTests={setTests}
+                    search={search}
+                />
+                <SearchOptions setContextFile={setContextFile} />
+            </div>
             <SearchStatus
                 searchState={searchState}
                 testOptions={testOptions}
@@ -272,6 +311,15 @@ const MethodSearch = () => {
                 setResult={setResult}
             />
             <SearchResults result={result} />
+            <style jsx>{`
+                .input {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: flex-start;
+                    gap: 30px;
+                }
+            `}</style>
         </>
     )
 }

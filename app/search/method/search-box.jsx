@@ -1,6 +1,7 @@
 import { SearchState } from "../status.jsx"
 import TextInput from "./input.jsx"
 import Tests from "./tests.jsx"
+import { useState } from "react"
 
 // Search details card
 
@@ -66,13 +67,13 @@ const SearchBox = ({
                 />
                 <Tests tests={tests} setTests={setTests} />
                 <button
-                    className={`search ${searchState !== SearchState.NONE ? "search-disabled" : ""}`}
+                    className={`search ${searchState !== SearchState.NONE && searchState !== SearchState.ERROR ? "search-disabled" : ""}`}
                     onClick={search}
                 >SEARCH</button>
             </div>
             <style jsx>{`
                 .card {
-                    width: min(750px, 100%);
+                    width: min(750px, 70%);
                     background-color: var(--fill);
                     border-radius: 4px;
                     padding: 30px 40px;
@@ -105,4 +106,78 @@ const SearchBox = ({
     )
 }
 
-export { SearchBox }
+// Search options card
+
+const SearchOptions = ({ setContextFile }) => {
+    const [ enabled, setEnabled ] = useState(false)
+
+    // Update selected file
+
+    function setFile(event) {
+        if (event.target.files[0]) {
+            setContextFile(event.target.files[0])
+        } else {
+            setContextFile(null)
+        }
+    }
+
+    return enabled ? (
+        <>
+            <div className="card">
+                <h2 className="title">Options</h2>
+                <div className="label">Search context</div>
+                <input className="file-input" type="file" onChange={setFile}></input>
+                <div className="note">Note: this is a legacy feature and may not work as expected</div>
+            </div>
+            <style jsx>{`
+                .card {
+                    width: max(calc(100% - 780px), 30%);
+                    background-color: var(--fill);
+                    border-radius: 4px;
+                    padding: 30px 40px;
+                    margin-bottom: 30px;
+                }
+
+                .title {
+                    font-size: 1.5rem;
+                    font-weight: normal;
+                    margin-bottom: 20px;
+                }
+
+                .label {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 0.6rem;
+                    font-size: 0.9rem;
+                    margin-bottom: 4px;
+                }
+
+                .file-input {
+                    margin-bottom: 20px;
+                }
+
+                .note {
+                    font-size: 0.9rem;
+                }
+            `}</style>
+        </>
+    ) : (
+        <>
+            <button className="expand" onClick={() => setEnabled(true)}>+</button>
+            <style jsx>{`
+                .expand {
+                    width: 3rem;
+                    height: 3rem;
+                    font-size: 1.5rem;
+                    background-color: var(--fill);
+                    border: 2px solid #E5E5E5;
+                    border-radius: 4px;
+                }
+            `}</style>
+        </>
+    )
+}
+
+export { SearchBox, SearchOptions }
