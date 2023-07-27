@@ -8,8 +8,8 @@ import { useState } from "react"
 
 const SearchPage = () => {
     const router = useRouter()
-    const searchParams = useSearchParams()
-    const [ searchType ] = useState(getSearchType(searchParams.get("type")))
+    //const searchParams = useSearchParams()
+    const [ searchType ] = useState("method"/*getSearchType(searchParams.get("type"))*/)
 
     return (
         <>
