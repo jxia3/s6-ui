@@ -87,8 +87,8 @@ const CodeResults = ({ results, sort, format }) => {
                             </pre>
                             <div className="controls">
                                 <button className="control" onClick={event => copyResult(event, code)}>COPY CODE</button>
-                                <a className="control view-raw" href={result.SOLSRC.slice(7)} target="_blank">VIEW RAW</a>
-                                <button className="control">VIEW LICENSE</button>
+                                <a className="control link-button" href={result.SOLSRC.slice(7)} target="_blank">VIEW RAW</a>
+                                <a className="control link-button" href={"/api/license?id=" + result.LICENSE} target="_blank">VIEW LICENSE</a>
                             </div>
                         </div>
                     )
@@ -140,13 +140,13 @@ const CodeResults = ({ results, sort, format }) => {
                     padding: 0.4rem 0.8rem;
                 }
 
-                .view-raw {
+                .link-button {
                     background-color: var(--color);
                     border-radius: 4px;
                     transition-duration: 150ms;
                 }
 
-                .view-raw:hover {
+                .link-button:hover {
                     background-color: var(--color-dark);
                 }
 
