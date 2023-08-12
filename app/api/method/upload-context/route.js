@@ -45,16 +45,19 @@ export async function POST(request) {
                 return NextResponse.json({
                     fileName: uploadData.HTML.BODY.RESULT,
                 })
-            } catch {
+            } catch(error) {
+                console.error(error)
                 return NextResponse.json({ error: "Failed to parse server response" }, { status: 500 })
             }
-        } catch {
+        } catch(error) {
+            console.error(error)
             if (error instanceof DOMException && error.name === "AbortError") {
                 return NextResponse.json({ error: "Server request timeout" }, { status: 500 })
             }
             return NextResponse.json({ error: "Server request failed" }, { status: 400 })
         }
-    } catch {
+    } catch(error) {
+        console.error(error)
         return NextResponse.json({ error: "Invalid file data" }, { status: 400 })
     }
 }
