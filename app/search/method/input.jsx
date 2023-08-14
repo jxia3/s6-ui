@@ -48,7 +48,7 @@ const TextInput = ({
                         }
                     }}
                 ></input>
-                {error ? <div className={`error ${Monospace.className}`}>Error: {error}</div> : <></>}
+                {error ? <div className={"error " + Monospace.className}>Error: {error}</div> : <></>}
             </div>
             <style jsx>{`
                 .content {

@@ -345,6 +345,7 @@ const MethodSearch = () => {
             <CaseSelect
                 testOptions={testOptions}
                 setTestOptions={setTestOptions}
+                method={method}
                 tests={tests}
                 searchState={searchState}
                 setSearchState={setSearchState}

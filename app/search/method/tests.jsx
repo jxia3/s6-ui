@@ -85,7 +85,7 @@ const Tests = ({ tests, setTests }) => {
                                 style={{ border: test.comparator !== "<??>" && test.error ? "2px solid var(--error)" : "" }}
                             ></input>
                         </div>
-                        {test.error ? <div className={`error ${Monospace.className}`}>Error: {test.error}</div> : <></>}
+                        {test.error ? <div className={"error " + Monospace.className}>Error: {test.error}</div> : <></>}
                     </React.Fragment>
                 ))}
             </div>

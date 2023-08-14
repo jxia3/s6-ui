@@ -35,7 +35,7 @@ const SearchBox = ({
                 setDeclarationError(check?.error || check?.PROBLEM)
             } else if (check?.RESULT?.SIGNATURE?.METHOD) {
                 setMethod(check.RESULT.SIGNATURE.METHOD)
-                setDeclaration(check.RESULT.SIGNATURE.METHOD.TEXT)
+                setDeclaration(check.RESULT.SIGNATURE.METHOD.TEXT.replaceAll(",", ", "))
             } else {
                 console.error("Unable to interpret server response " + JSON.stringify(check))
             }

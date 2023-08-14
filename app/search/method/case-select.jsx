@@ -38,7 +38,7 @@ const TestCase = ({
                 >
                     REJECT
                 </button>
-                <div className={`value ${Monospace.className}`}>{result.VALUE.toString()}</div>
+                <div className={"value " + Monospace.className}>{result.VALUE.toString()}</div>
             </div>
             <style jsx>{`
                 .result {
@@ -101,6 +101,7 @@ const TestCase = ({
 const CaseSelect = ({
     testOptions,
     setTestOptions,
+    method,
     tests,
     searchState,
     setSearchState,
@@ -116,7 +117,7 @@ const CaseSelect = ({
         const newTestValues = []
         for (const test of tests) {
             if (test.comparator === "<??>") {
-                newTestValues.push(test.left)
+                newTestValues.push(method.NAME + "(" + test.left + ")")
             }
         }
         if (newTestValues.length) {
@@ -163,6 +164,7 @@ const CaseSelect = ({
         if (!selected) return
 
         setTestOptions(null)
+        setSelections([])
         setSearchState(SearchState.SEARCHING)
 
         // Send selection request
@@ -199,15 +201,32 @@ const CaseSelect = ({
         }
     }
 
-    return testOptions?.TESTCASE ? (
+    // Count selected cases in selections
+
+    function countAccepted(selections, caseIndex) {
+        let accepted = 0
+        for (const selection of selections[caseIndex]) {
+            if (selection) {
+                accepted ++
+            }
+        }
+        return accepted
+    }
+
+    return testOptions?.TESTCASE && selections.length > 0 ? (
         <>
             <button className="continue" onClick={continueSearch}>CONTINUE WITH SELECTED</button>
             <div className="cases">
                 {testOptions.TESTCASE.map((testCase, caseIndex) => (
                     <div className="case" key={testCase.attributes.NAME}>
                         <h3 className="title">
-                            Test case:&nbsp;
-                            <span className={Monospace.className}>{testValues[caseIndex]}</span>
+                            <div className="case-details">
+                                Test case:
+                                <span className={"case-params " + Monospace.className}>{testValues[caseIndex]}</span>
+                            </div>
+                            <div>
+                                Cases accepted: {countAccepted(selections, caseIndex)}/{selections[caseIndex].length}
+                            </div>
                         </h3>
                         {selections.length ? testCase.USERCASE.map((result, resultIndex) => (
                             <TestCase
@@ -253,7 +272,24 @@ const CaseSelect = ({
                 }
 
                 .title {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: flex-start;
+                    gap: 2px;
                     font-weight: normal;
+                }
+
+                .case-details {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                }
+
+                .case-params {
+                    margin-left: 6px;
+                    font-size: 0.9rem;
                 }
             `}</style>
         </>
