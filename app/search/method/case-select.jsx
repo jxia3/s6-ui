@@ -264,7 +264,7 @@ const CaseSelect = ({
                     align-items: flex-start;
                     gap: 10px;
                     border-top: 1px solid #888888;
-                    padding: 20px 0 15px 0;
+                    padding: 15px 0;
                 }
 
                 .case:last-of-type {
