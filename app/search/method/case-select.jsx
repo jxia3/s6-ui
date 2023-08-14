@@ -54,7 +54,7 @@ const TestCase = ({
                 }
 
                 .result-accepted {
-                    border: 2px solid #9DD49D;
+                    border: 2px solid #83C983;
                 }
 
                 .button {
@@ -64,29 +64,27 @@ const TestCase = ({
                 }
 
                 .accept {
-                    background-color: #BEE3BE;
+                    background-color: #D1EBD1;
                 }
 
                 .accept:hover {
-                    background-color: #9DD49D;
-                    border: 2px solid #9DD49D;
+                    background-color: #83C983;
                 }
 
                 .accepted {
-                    border: 2px solid #9DD49D;
+                    border: 2px solid #83C983;
                 }
 
                 .reject {
-                    background-color: #FFB3B3;
+                    background-color: #FFCACA;
                 }
 
                 .reject:hover {
-                    background-color: #FF8F8F;
-                    border: 2px solid #FF8F8F;
+                    background-color: #FF6767;
                 }
 
                 .rejected {
-                    border: 2px solid #FF8F8F;
+                    border: 2px solid #FF6767;
                 }
 
                 .value {
