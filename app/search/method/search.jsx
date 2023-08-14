@@ -330,6 +330,7 @@ const MethodSearch = () => {
                     setDeclaration={setDeclaration}
                     declarationError={declarationError}
                     setDeclarationError={setDeclarationError}
+                    method={method}
                     setMethod={setMethod}
                     tests={tests}
                     setTests={setTests}

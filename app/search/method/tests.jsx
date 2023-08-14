@@ -1,9 +1,34 @@
 import { Monospace } from "../../fonts.js"
-import React from "react"
+import React, { useEffect } from "react"
+
+// Formatted test parameters with function name input
+
+const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
+    return (
+        <>
+            <input
+                className={"input " + Monospace.className}
+                type="text"
+                value={test.left}
+                onChange={event => updateTest(index, "left", event.target.value)}
+                onFocus={() => updateTest(index, "error", null)}
+                onBlur={() => updateTests()}
+                style={{ border: test.error ? "2px solid var(--error)" : "" }}
+            ></input>
+            <style jsx>{`
+                .input {
+                    width: 100%;
+                    font-size: 0.8rem;
+                    padding: 2px 5px;
+                }
+            `}</style>
+        </>
+    )
+}
 
 // Function test case input
 
-const Tests = ({ tests, setTests }) => {
+const Tests = ({ tests, setTests, method }) => {
     // Update test data on input
 
     function updateTest(index, prop, value) {
@@ -51,15 +76,13 @@ const Tests = ({ tests, setTests }) => {
                 {tests.map((test, index) => (
                     <React.Fragment key={index}>
                         <div className="test">
-                            <input
-                                className={"input " + Monospace.className}
-                                type="text"
-                                value={test.left}
-                                onChange={event => updateTest(index, "left", event.target.value)}
-                                onFocus={() => updateTest(index, "error", null)}
-                                onBlur={() => updateTests()}
-                                style={{ border: test.error ? "2px solid var(--error)" : "" }}
-                            ></input>
+                            <ParamInput
+                                test={test}
+                                index={index}
+                                method={method}
+                                updateTest={updateTest}
+                                updateTests={updateTests}
+                            ></ParamInput>
                             <select
                                 className={"comparator " + Monospace.className}
                                 value={test.comparator}

@@ -15,6 +15,7 @@ const SearchBox = ({
     setDeclaration,
     declarationError,
     setDeclarationError,
+    method,
     setMethod,
     tests,
     setTests,
@@ -65,7 +66,7 @@ const SearchBox = ({
                     onBlur={checkSignature}
                     monospace
                 />
-                <Tests tests={tests} setTests={setTests} />
+                <Tests tests={tests} setTests={setTests} method={method} />
                 <button
                     className={`search ${searchState !== SearchState.NONE && searchState !== SearchState.ERROR ? "search-disabled" : ""}`}
                     onClick={search}
