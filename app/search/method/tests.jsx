@@ -73,6 +73,7 @@ const Tests = ({ tests, setTests, method }) => {
         <>
             <div className="content">
                 <div className="label">Method tests</div>
+                {JSON.stringify(tests)}
                 {tests.map((test, index) => (
                     <React.Fragment key={index}>
                         <div className="test">

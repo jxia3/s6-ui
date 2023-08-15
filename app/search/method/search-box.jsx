@@ -21,6 +21,8 @@ const SearchBox = ({
     setTests,
     search,
 }) => {
+    const [ loadingMethod, setLoadingMethod ] = useState(false)
+
     // Get function signature data from server on blur
 
     async function checkSignature() {
@@ -63,14 +65,22 @@ const SearchBox = ({
                     error={declarationError}
                     setError={setDeclarationError}
                     onChange={() => setMethod(null)}
-                    onBlur={checkSignature}
+                    onBlur={async () => {
+                        setLoadingMethod(true)
+                        await checkSignature()
+                        setLoadingMethod(false)
+                    }}
                     monospace
                 />
                 <Tests tests={tests} setTests={setTests} method={method} />
                 <button
-                    className={`search ${searchState !== SearchState.NONE && searchState !== SearchState.ERROR ? "search-disabled" : ""}`}
+                    className={`search ${
+                        (searchState !== SearchState.NONE && searchState !== SearchState.ERROR)
+                            || loadingMethod ? "search-disabled" : ""}`}
                     onClick={search}
-                >SEARCH</button>
+                >
+                    SEARCH
+                </button>
             </div>
             <style jsx>{`
                 .card {
