@@ -22,6 +22,7 @@ const MethodSearch = () => {
         right: "",
         error: null,
     }])
+    const [ finalTests, setFinalTests ] = useState(null)
     const [ contextFile, setContextFile ] = useState(null)
     const [ contextData, setContextData ] = useState(null)
 
@@ -40,6 +41,7 @@ const MethodSearch = () => {
             return
         }
         setTestOptions(null)
+        setFinalTests(null)
         setResult(null)
         setSearchState(SearchState.VALIDATING)
 
@@ -247,6 +249,7 @@ const MethodSearch = () => {
             }
             if (updated) {
                 setTests(newTests)
+                setFinalTests(newTests)
             }
             return { data: testCases }
         } catch(error) {
@@ -334,6 +337,8 @@ const MethodSearch = () => {
                     setMethod={setMethod}
                     tests={tests}
                     setTests={setTests}
+                    finalTests={finalTests}
+                    setFinalTests={setFinalTests}
                     search={search}
                 />
                 <SearchOptions setContextFile={setContextFile} />

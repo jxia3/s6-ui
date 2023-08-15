@@ -1,5 +1,5 @@
 import { SearchState } from "../status.jsx"
-import TextInput from "./input.jsx"
+import TextInput from "./text-input.jsx"
 import Tests from "./tests.jsx"
 import { useState } from "react"
 
@@ -19,6 +19,8 @@ const SearchBox = ({
     setMethod,
     tests,
     setTests,
+    finalTests,
+    setFinalTests,
     search,
 }) => {
     const [ loadingMethod, setLoadingMethod ] = useState(false)
@@ -72,7 +74,13 @@ const SearchBox = ({
                     }}
                     monospace
                 />
-                <Tests tests={tests} setTests={setTests} method={method} />
+                <Tests
+                    tests={tests}
+                    setTests={setTests}
+                    method={method}
+                    finalTests={finalTests}
+                    setFinalTests={setFinalTests}
+                />
                 <button
                     className={`search ${
                         (searchState !== SearchState.NONE && searchState !== SearchState.ERROR)
