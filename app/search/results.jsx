@@ -40,13 +40,13 @@ const CodeResults = ({ results, sort, format }) => {
         })
             .replace(
                 // Match type parameter lists
-                /( {1}[A-Za-z]{1}[\w$]*) {1}<{1} {1}([A-Za-z]{1}[\w$]*(?:, )*)* {1}>{1}/g,
+                /( [A-Za-z][\w$]*) < ([A-Za-z][\w$]*(?:, )*)* >/g,
                 "$1<$2>"
             )
             .replaceAll("> ()", ">()")
             .replace(
                 // Match for-each loops
-                /(for \([A-Za-z]{1}[\w$<>, ]* ){1}([A-Za-z]{1}[\w$]*){1}(?:: ){1}/g,
+                /(for \([A-Za-z][\w$<>, ]* )([A-Za-z][\w$]*)(?:: )/g,
                 "$1$2 : "
             )
     }
