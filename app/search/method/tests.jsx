@@ -54,26 +54,33 @@ const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
         } else if (formatted.current && method?.NAME && textBefore.current) {
             const formatBegin = method.NAME + "("
             if (!value.startsWith(formatBegin) && value.endsWith(")")) {
-                if (!/^[A-Za-z][\w$]*\(.*\)$/g.test(value)
-                    && (!value.startsWith(method.NAME) || value.length !== textBefore.current.length - 1)) {
-                    // Delete from beginning section of parameters and reformat
+                if (!/^[A-Za-z][\w$]*\(.*\)$/g.test(value)) {
+                    if (value.startsWith(method.NAME) && value.length === textBefore.current.length - 1) {
+                        // Set cursor position 1 after begin parentheses
 
-                    let matchLength = 0
-                    for (let c = 0; c < method.NAME.length; c ++) {
-                        if (value[c] == textBefore.current[c]) {
-                            matchLength ++
-                        } else {
-                            break
+                        setTimeout(() => {
+                            event.target.setSelectionRange(formatBegin.length, formatBegin.length)
+                        })
+                    } else {
+                        // Delete from beginning section of parameters and reformat
+
+                        let matchLength = 0
+                        for (let c = 0; c < method.NAME.length; c ++) {
+                            if (value[c] == textBefore.current[c]) {
+                                matchLength ++
+                            } else {
+                                break
+                            }
                         }
+
+                        const params = value.slice(matchLength, -1)
+                        const formatText = formatBegin + params + ")"
+
+                        checkCursor.current = true
+                        textBefore.current = formatText
+                        setInputText(formatText)
+                        updateTest(index, "left", params)
                     }
-
-                    const params = value.slice(matchLength, -1)
-                    const formatText = formatBegin + params + ")"
-
-                    checkCursor.current = true
-                    textBefore.current = formatText
-                    setInputText(formatText)
-                    updateTest(index, "left", params)
                 }
                 return
             } else if (value.startsWith(formatBegin) && !value.endsWith(")")) {
