@@ -188,10 +188,17 @@ const CaseSelect = ({
                 // Found search results
 
                 setSearchState(SearchState.NONE)
-                setResult({
-                    SOLUTION: [],
-                    ...selectResult.result.SOLUTIONS,
-                })
+                if (!selectResult.result.SOLUTIONS.SOLUTION || Array.isArray(selectResult.result.SOLUTIONS.SOLUTION)) {
+                    setResult({
+                        SOLUTION: [],
+                        ...selectResult.result.SOLUTIONS,
+                    })
+                } else {
+                    setResult({
+                        ...selectResult.result.SOLUTIONS,
+                        SOLUTION: [selectResult.result.SOLUTIONS.SOLUTION],
+                    })
+                }
             } else {
                 console.error("Unable to interpret server response " + JSON.stringify(selectResult))
             }

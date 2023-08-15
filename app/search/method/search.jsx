@@ -291,10 +291,17 @@ const MethodSearch = () => {
             // Found search results
 
             setSearchState(SearchState.NONE)
-            setResult({
-                SOLUTION: [],
-                ...searchResult.result.SOLUTIONS,
-            })
+            if (!selectResult.result.SOLUTIONS.SOLUTION || Array.isArray(selectResult.result.SOLUTIONS.SOLUTION)) {
+                setResult({
+                    SOLUTION: [],
+                    ...selectResult.result.SOLUTIONS,
+                })
+            } else {
+                setResult({
+                    ...selectResult.result.SOLUTIONS,
+                    SOLUTION: [selectResult.result.SOLUTIONS.SOLUTION],
+                })
+            }
         } else if (searchResult?.result?.USERINPUT) {
             // Parse test case selection response
 
