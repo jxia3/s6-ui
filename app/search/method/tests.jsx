@@ -1,22 +1,112 @@
 import { Monospace } from "../../fonts.js"
-import React, { useEffect } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 // Formatted test parameters with function name input
 
 const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
+    const [ inputText, setInputText ] = useState("")
+    const formatted = useRef(false)
+    const textBefore = useRef("")
+    const methodChanged = useRef(null)
+
+    // Add method name to function parameters
+
+    useEffect(() => {
+        methodChanged.current = true
+        updateInputText(test.left)
+    }, [method])
+
+    // Check cursor position on method change
+
+    useEffect(() => {
+        if (methodChanged.current) {
+            methodChanged.current = false
+            if (document.activeElement?.classList?.contains("test-input") && method?.NAME) {
+                setCursorPosition(document.activeElement)
+            }
+        }
+    }, [inputText])
+
+    // Check for valid update to text input
+
+    function checkUpdateEvent(event) {
+        console.log("before", textBefore.current, "after", event.target.value)
+        if (!event.target.value) {
+            setInputText("")
+            updateTest(index, "left", "")
+        } else {
+            updateInputText(event.target.value)
+        }
+    }
+
+    // Update text input value and store text value as previous
+
+    function updateInputText(value) {
+        if (!value) {
+            formatted.current = false
+            textBefore.current = ""
+            return
+        }
+
+        if (method?.NAME) {
+            if (/^[A-Za-z][\w$]*\(.*\)$/g.test(value)) {
+                // Detected function with parentheses
+
+                const params = value.slice(value.indexOf("(") + 1, -1)
+                const text = method.NAME + "(" + params + ")"
+                setInputText(text)
+                updateTest(index, "left", params)
+                textBefore.current = text
+            } else {
+                // Consider entire value as parameters
+
+                const text = method.NAME + "(" + value + ")"
+                setInputText(text)
+                updateTest(index, "left", value)
+                textBefore.current = text
+            }
+            formatted.current = true
+        } else {
+            if (!formatted.current) {
+                // No method name and not formatted
+
+                setInputText(value)
+                updateTest(index, "left", value)
+                textBefore.current = value
+            }
+            formatted.current = false
+        }
+    }
+
+    // Set cursor position to inside function parameters
+
+    function setCursorPosition(input) {
+        if (!input.value) return
+        if (method?.NAME) {
+            if (input.selectionStart === input.selectionEnd) {
+                if (input.selectionEnd === input.value.length) {
+                    input.setSelectionRange(input.value.length - 1, input.value.length - 1)
+                } else if (input.selectionStart < method.NAME.length + 1) {
+                    input.setSelectionRange(method.NAME.length + 1, method.NAME.length + 1)
+                }
+            }
+        }
+    }
+
     return (
         <>
             <input
-                className={"input " + Monospace.className}
+                className={"test-input " + Monospace.className}
                 type="text"
-                value={test.left}
-                onChange={event => updateTest(index, "left", event.target.value)}
+                value={inputText}
+                onChange={checkUpdateEvent}
                 onFocus={() => updateTest(index, "error", null)}
+                onClick={event => setCursorPosition(event.target)}
                 onBlur={() => updateTests()}
                 style={{ border: test.error ? "2px solid var(--error)" : "" }}
             ></input>
             <style jsx>{`
-                .input {
+                .test-input {
                     width: 100%;
                     font-size: 0.8rem;
                     padding: 2px 5px;
