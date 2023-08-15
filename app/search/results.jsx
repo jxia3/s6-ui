@@ -40,7 +40,7 @@ const CodeResults = ({ results, sort, format }) => {
         })
             .replace(
                 // Match type parameter lists
-                /( [A-Za-z][\w$]*) < ([A-Za-z][\w$]*(?:, )*)* >/g,
+                /( [A-Za-z][\w$]*) < ([A-Za-z][\w$]*(?:, )*)* *>/g,
                 "$1<$2>"
             )
             .replaceAll("> ()", ">()")
