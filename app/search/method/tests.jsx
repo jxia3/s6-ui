@@ -7,20 +7,22 @@ const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
     const [ inputText, setInputText ] = useState("")
     const formatted = useRef(false)
     const textBefore = useRef("")
-    const methodChanged = useRef(null)
+    const checkCursor = useRef(null)
 
     // Add method name to function parameters
 
     useEffect(() => {
-        methodChanged.current = true
+        if (test.left) {
+            checkCursor.current = true
+        }
         updateInputText(test.left)
     }, [method])
 
-    // Check cursor position on method change
+    // Check cursor position on important state change
 
     useEffect(() => {
-        if (methodChanged.current) {
-            methodChanged.current = false
+        if (checkCursor.current) {
+            checkCursor.current = false
             if (document.activeElement?.classList?.contains("test-input") && method?.NAME) {
                 setCursorPosition(document.activeElement)
             }
@@ -30,13 +32,30 @@ const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
     // Check for valid update to text input
 
     function checkUpdateEvent(event) {
-        console.log("before", textBefore.current, "after", event.target.value)
-        if (!event.target.value) {
+        const value = event.target.value
+        if (!value) {
+            // Everything in input deleted
+
+            textBefore.current = ""
             setInputText("")
             updateTest(index, "left", "")
-        } else {
-            updateInputText(event.target.value)
+            return
+        } else if (formatted.current
+            && /^[A-Za-z][\w$]*\(\)$/g.test(textBefore.current)
+            && value.length < textBefore.current.length) {
+            // Delete on empty formatted method
+
+            formatted.current = false
+            textBefore.current = ""
+            setInputText("")
+            return
+        } else if (formatted.current && method?.NAME && textBefore.current) {
+            console.log("doing a fancy update")
         }
+
+        // Default update
+
+        updateInputText(value)
     }
 
     // Update text input value and store text value as previous
@@ -49,30 +68,31 @@ const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
         }
 
         if (method?.NAME) {
+            formatted.current = true
             if (/^[A-Za-z][\w$]*\(.*\)$/g.test(value)) {
                 // Detected function with parentheses
 
                 const params = value.slice(value.indexOf("(") + 1, -1)
                 const text = method.NAME + "(" + params + ")"
+                textBefore.current = text
                 setInputText(text)
                 updateTest(index, "left", params)
-                textBefore.current = text
             } else {
                 // Consider entire value as parameters
 
                 const text = method.NAME + "(" + value + ")"
+                checkCursor.current = true
+                textBefore.current = text
                 setInputText(text)
                 updateTest(index, "left", value)
-                textBefore.current = text
             }
-            formatted.current = true
         } else {
             if (!formatted.current) {
                 // No method name and not formatted
 
+                textBefore.current = value
                 setInputText(value)
                 updateTest(index, "left", value)
-                textBefore.current = value
             }
             formatted.current = false
         }
