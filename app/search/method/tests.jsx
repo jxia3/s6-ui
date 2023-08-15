@@ -36,9 +36,8 @@ const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
         if (!value) {
             // Everything in input deleted
 
+            formatted.current = false
             textBefore.current = ""
-            setInputText("")
-            updateTest(index, "left", "")
             return
         } else if (formatted.current
             && /^[A-Za-z][\w$]*\(\)$/g.test(textBefore.current)
@@ -50,7 +49,55 @@ const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
             setInputText("")
             return
         } else if (formatted.current && method?.NAME && textBefore.current) {
-            console.log("doing a fancy update")
+            const formatBegin = method.NAME + "("
+            if (!value.startsWith(formatBegin) && value.endsWith(")")) {
+                // todo: check if part of method was deleted/added from the beginning
+                console.log("is a begin delete")
+            } else if (value.startsWith(formatBegin) && !value.endsWith(")")) {
+                if (value.length < textBefore.current.length) {
+                    // Delete from end section of parameters and reformat
+                    
+                    const params = value.slice(formatBegin.length)
+                    const formatText = formatBegin + params + ")"
+
+                    if (formatText !== textBefore.current) {
+                        checkCursor.current = true
+                        textBefore.current = formatText
+                        setInputText(formatText)
+                        updateTest(index, "left", params)
+                    } else {
+                        // Janky timeout to set cursor position 1 before end parentheses
+
+                        setTimeout(() => {
+                            event.target.setSelectionRange(formatText.length - 1, formatText.length - 1)
+                        })
+                    }
+
+                    return
+                } else if (value.length > textBefore.current.length
+                    && textBefore.current.lastIndexOf(")") === value.lastIndexOf(")")) {
+                    // Add to end section of parameters and reformat
+
+                    const params = value.slice(formatBegin.length, value.lastIndexOf(")"))
+                    const extraParams = value.slice(value.lastIndexOf(")") + 1)
+                    const formatText = formatBegin + params + extraParams + ")"
+
+                    checkCursor.current = true
+                    textBefore.current = formatText
+                    setInputText(formatText)
+                    updateTest(index, "left", params + extraParams)
+
+                    return
+                }
+            } else if (!value.startsWith(formatBegin) && !value.endsWith(")")) {
+                // Entire parameter list deleted
+
+                formatted.current = false
+                textBefore.current = ""
+                setInputText("")
+                updateTest(index, "left", "")
+                return
+            }
         }
 
         // Default update
