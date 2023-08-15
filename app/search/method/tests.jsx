@@ -38,6 +38,8 @@ const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
 
             formatted.current = false
             textBefore.current = ""
+            setInputText("")
+            updateTest(index, "left", "")
             return
         } else if (formatted.current
             && /^[A-Za-z][\w$]*\(\)$/g.test(textBefore.current)
@@ -47,12 +49,33 @@ const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
             formatted.current = false
             textBefore.current = ""
             setInputText("")
+            updateTest(index, "left", "")
             return
         } else if (formatted.current && method?.NAME && textBefore.current) {
             const formatBegin = method.NAME + "("
             if (!value.startsWith(formatBegin) && value.endsWith(")")) {
-                // todo: check if part of method was deleted/added from the beginning
-                console.log("is a begin delete")
+                if (!/^[A-Za-z][\w$]*\(.*\)$/g.test(value)
+                    && (!value.startsWith(method.NAME) || value.length !== textBefore.current.length - 1)) {
+                    // Delete from beginning section of parameters and reformat
+
+                    let matchLength = 0
+                    for (let c = 0; c < method.NAME.length; c ++) {
+                        if (value[c] == textBefore.current[c]) {
+                            matchLength ++
+                        } else {
+                            break
+                        }
+                    }
+
+                    const params = value.slice(matchLength, -1)
+                    const formatText = formatBegin + params + ")"
+
+                    checkCursor.current = true
+                    textBefore.current = formatText
+                    setInputText(formatText)
+                    updateTest(index, "left", params)
+                }
+                return
             } else if (value.startsWith(formatBegin) && !value.endsWith(")")) {
                 if (value.length < textBefore.current.length) {
                     // Delete from end section of parameters and reformat
@@ -66,7 +89,7 @@ const ParamInput = ({ test, index, method, updateTest, updateTests }) => {
                         setInputText(formatText)
                         updateTest(index, "left", params)
                     } else {
-                        // Janky timeout to set cursor position 1 before end parentheses
+                        // Set cursor position 1 before end parentheses
 
                         setTimeout(() => {
                             event.target.setSelectionRange(formatText.length - 1, formatText.length - 1)
