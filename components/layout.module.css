@@ -21,10 +21,6 @@
     font-size: 1.25rem;
 }
 
-.link {
-    font-size: 1.1rem;
-}
-
 .link:hover {
     text-decoration: underline;
 }
