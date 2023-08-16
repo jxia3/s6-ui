@@ -39,6 +39,7 @@ const TestCase = ({
                     REJECT
                 </button>
                 <div className={"value " + Monospace.className}>{result.VALUE.toString()}</div>
+                <div className="indicator">{selected ? "✅" : "❌"}</div>
             </div>
             <style jsx>{`
                 .result {
@@ -90,6 +91,11 @@ const TestCase = ({
                 .value {
                     font-size: 0.8rem;
                     margin-left: 0.5rem;
+                }
+
+                .indicator {
+                    margin-left: auto;
+                    margin-bottom: 2px;
                 }
             `}</style>
         </>
