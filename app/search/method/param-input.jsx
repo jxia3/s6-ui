@@ -78,7 +78,7 @@ const ParamInput = ({ test, index, method, finalTests, updateTest, updateTests }
 
                         let matchLength = 0
                         for (let c = 0; c < method.NAME.length; c ++) {
-                            if (value[c] == textBefore.current[c]) {
+                            if (value[c] === textBefore.current[c]) {
                                 matchLength ++
                             } else {
                                 break

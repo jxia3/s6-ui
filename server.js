@@ -8,7 +8,7 @@ const https = require("https")
 const next = require("next")
 
 const config = {
-    dev: true,
+    dev: process.argv[2] !== "--prod",
     ports: {
         http: 8080,
         https: 8443,
