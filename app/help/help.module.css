@@ -1,0 +1,37 @@
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.content {
+    width: min(850px, 100%);
+}
+
+.header {
+    font-size: 1.4rem;
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+
+.text {
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.text-end {
+    margin-bottom: 30px;
+}
+
+.link {
+    text-decoration: underline;
+}
+
+.code {
+    font-size: 0.85rem;
+    background-color: #F1F1F1;
+    border-radius: 2px;
+    padding: 1px 3px;
+    margin: 0 4px;
+}
