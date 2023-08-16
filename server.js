@@ -4,6 +4,7 @@
 
 const express = require("express")
 const fs = require("fs")
+const https = require("https")
 const next = require("next")
 
 const config = {
@@ -14,6 +15,7 @@ const config = {
         dev: 3000,
     },
     ssl: {
+        enabled: true,
         key: "/vol/home/spr/cert/conifer2.key",
         certificate: "/vol/home/spr/cert/conifer2_cs_brown_edu_cert.cer",
     },
@@ -43,7 +45,6 @@ if (config.dev) {
     // Start development server on development port
 
     const server = express()
-
     server.all("*", (req, res) => {
         log("Received " + req.method + " request on " + req.url)
         return handleRequest(req, res)
@@ -51,9 +52,47 @@ if (config.dev) {
 
     server.listen(config.ports.dev, error => {
         if (error) {
-            throw error
+            log("Error listening on port " + config.ports.dev + ": " + error.message)
+            process.exit(1)
         }
         log("App ready on port " + config.ports.dev)
+    })
+} else {
+    // Start production HTTP server
+
+    const httpServer = express()
+    httpServer.all("*", (req, res) => {
+        log("Received " + req.method + " request on " + req.url)
+        return handleRequest(req, res)
+    })
+
+    httpServer.listen(config.ports.http, error => {
+        if (error) {
+            log("Error listening on port " + config.ports.http + ": " + error.message)
+            process.exit(1)
+        }
+        log("[HTTP] App ready on port " + config.ports.http)
+    })
+
+    // Start production HTTPS server
+
+    if (!config.ssl.enabled) {
+        return
+    }
+
+    const sslOptions = {}
+    try {
+        sslOptions.key = fs.readFileSync(config.ssl.key)
+        sslOptions.cert = fs.readFileSync(config.ssl.cert)
+    } catch(error) {
+        log("Error reading certificates: " + error.message)
+        process.exit(1)
+    }
+    log("[HTTPS] Loaded certificates")
+
+    const httpsServer = https.createServer(sslOptions, app)
+    httpsServer.listen(config.ports.https, () => {
+        log("[HTTPS] App ready on port " + config.ports.https)
     })
 }
 
