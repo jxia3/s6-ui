@@ -291,15 +291,15 @@ const MethodSearch = () => {
             // Found search results
 
             setSearchState(SearchState.NONE)
-            if (!selectResult.result.SOLUTIONS.SOLUTION || Array.isArray(selectResult.result.SOLUTIONS.SOLUTION)) {
+            if (!searchResult.result.SOLUTIONS.SOLUTION || Array.isArray(searchResult.result.SOLUTIONS.SOLUTION)) {
                 setResult({
                     SOLUTION: [],
-                    ...selectResult.result.SOLUTIONS,
+                    ...searchResult.result.SOLUTIONS,
                 })
             } else {
                 setResult({
-                    ...selectResult.result.SOLUTIONS,
-                    SOLUTION: [selectResult.result.SOLUTIONS.SOLUTION],
+                    ...searchResult.result.SOLUTIONS,
+                    SOLUTION: [searchResult.result.SOLUTIONS.SOLUTION],
                 })
             }
         } else if (searchResult?.result?.USERINPUT) {
