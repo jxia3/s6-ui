@@ -90,7 +90,7 @@ if (config.dev) {
     }
     log("[HTTPS] Loaded certificates")
 
-    const httpsServer = https.createServer(sslOptions, app)
+    const httpsServer = https.createServer(sslOptions, httpServer)
     httpsServer.listen(config.ports.https, () => {
         log("[HTTPS] App ready on port " + config.ports.https)
     })
