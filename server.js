@@ -4,6 +4,7 @@
 
 const express = require("express")
 const fs = require("fs")
+const http = require("http")
 const https = require("https")
 const next = require("next")
 
@@ -17,7 +18,7 @@ const config = {
     ssl: {
         enabled: true,
         key: "/vol/home/spr/cert/conifer2.key",
-        certificate: "/vol/home/spr/cert/conifer2_cs_brown_edu_cert.cer",
+        cert: "/vol/home/spr/cert/conifer2_cs_brown_edu_cert.cer",
     },
     logToConsole: true,
 }
@@ -60,12 +61,13 @@ if (config.dev) {
 } else {
     // Start production HTTP server
 
-    const httpServer = express()
-    httpServer.all("*", (req, res) => {
+    const app = express()
+    app.all("*", (req, res) => {
         log("Received " + req.method + " request on " + req.url)
         return handleRequest(req, res)
     })
 
+    const httpServer = http.createServer(app)
     httpServer.listen(config.ports.http, error => {
         if (error) {
             log("Error listening on port " + config.ports.http + ": " + error.message)
@@ -83,15 +85,19 @@ if (config.dev) {
     const sslOptions = {}
     try {
         sslOptions.key = fs.readFileSync(config.ssl.key)
-        sslOptions.cert = fs.readFileSync(config.ssl.certificate)
+        sslOptions.cert = fs.readFileSync(config.ssl.cert)
     } catch(error) {
         log("Error reading certificates: " + error.message)
         process.exit(1)
     }
     log("[HTTPS] Loaded certificates")
 
-    const httpsServer = https.createServer(sslOptions, httpServer)
-    httpsServer.listen(config.ports.https, () => {
+    const httpsServer = https.createServer(sslOptions, app)
+    httpsServer.listen(config.ports.https, error => {
+        if (error) {
+            log("Error listening on port " + config.ports.https + ": " + error.message)
+            process.exit(1)
+        }
         log("[HTTPS] App ready on port " + config.ports.https)
     })
 }
