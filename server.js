@@ -83,7 +83,7 @@ if (config.dev) {
     const sslOptions = {}
     try {
         sslOptions.key = fs.readFileSync(config.ssl.key)
-        sslOptions.cert = fs.readFileSync(config.ssl.cert)
+        sslOptions.cert = fs.readFileSync(config.ssl.certificate)
     } catch(error) {
         log("Error reading certificates: " + error.message)
         process.exit(1)
